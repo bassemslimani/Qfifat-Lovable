@@ -29,8 +29,8 @@ export function BottomNav() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-effect border-t border-border/50 pb-safe">
-      <div className="flex items-center justify-around h-16">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-effect border-t border-border/50">
+      <div className="flex items-center justify-around h-14 pb-safe">
         {navItems.map((item) => (
           <motion.button
             key={item.path}

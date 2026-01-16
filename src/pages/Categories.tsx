@@ -65,9 +65,9 @@ export default function Categories() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background pt-14">
         <Header />
-        <div className="container py-12 flex items-center justify-center">
+        <div className="container py-12 pt-safe flex items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
         <BottomNav />
@@ -76,10 +76,10 @@ export default function Categories() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pt-14 pb-20">
       <Header />
 
-      <main className="container py-6">
+      <main className="container py-6 pt-safe">
         {/* Hero */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
