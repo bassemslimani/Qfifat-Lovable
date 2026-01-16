@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -15,10 +15,17 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
+  Store,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
+import { ProductForm } from "@/components/admin/ProductForm";
 import logo from "@/assets/logo.png";
 
 interface Stats {
@@ -33,6 +40,8 @@ export default function AdminDashboard() {
   const { user, isAdmin, signOut, loading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [showProductForm, setShowProductForm] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
   const [stats, setStats] = useState<Stats>({
     totalProducts: 0,
     totalOrders: 0,
@@ -77,6 +86,7 @@ export default function AdminDashboard() {
     { id: "products", label: "المنتجات", icon: Package },
     { id: "orders", label: "الطلبات", icon: ShoppingCart },
     { id: "payments", label: "المدفوعات", icon: CreditCard },
+    { id: "merchants", label: "طلبات البائعين", icon: Store },
     { id: "users", label: "المستخدمين", icon: Users },
     { id: "settings", label: "الإعدادات", icon: Settings },
   ];
@@ -238,19 +248,38 @@ export default function AdminDashboard() {
               <div className="bg-card rounded-2xl p-6 shadow-card">
                 <h3 className="font-bold text-foreground mb-4">إجراءات سريعة</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <Button variant="outline" className="h-auto py-4 flex-col gap-2">
+                  <Button 
+                    variant="outline" 
+                    className="h-auto py-4 flex-col gap-2"
+                    onClick={() => {
+                      setActiveTab("products");
+                      setShowProductForm(true);
+                    }}
+                  >
                     <Package className="h-5 w-5" />
                     <span>إضافة منتج</span>
                   </Button>
-                  <Button variant="outline" className="h-auto py-4 flex-col gap-2">
+                  <Button 
+                    variant="outline" 
+                    className="h-auto py-4 flex-col gap-2"
+                    onClick={() => setActiveTab("payments")}
+                  >
                     <CheckCircle className="h-5 w-5" />
                     <span>تأكيد مدفوعات</span>
                   </Button>
-                  <Button variant="outline" className="h-auto py-4 flex-col gap-2">
-                    <TrendingUp className="h-5 w-5" />
-                    <span>تقارير المبيعات</span>
+                  <Button 
+                    variant="outline" 
+                    className="h-auto py-4 flex-col gap-2"
+                    onClick={() => setActiveTab("merchants")}
+                  >
+                    <Store className="h-5 w-5" />
+                    <span>طلبات البائعين</span>
                   </Button>
-                  <Button variant="outline" className="h-auto py-4 flex-col gap-2">
+                  <Button 
+                    variant="outline" 
+                    className="h-auto py-4 flex-col gap-2"
+                    onClick={() => setActiveTab("settings")}
+                  >
                     <Settings className="h-5 w-5" />
                     <span>إعدادات الدفع</span>
                   </Button>
@@ -260,7 +289,13 @@ export default function AdminDashboard() {
           )}
 
           {activeTab === "products" && (
-            <AdminProducts />
+            <AdminProducts 
+              showForm={showProductForm}
+              setShowForm={setShowProductForm}
+              editingProduct={editingProduct}
+              setEditingProduct={setEditingProduct}
+              onRefresh={fetchStats}
+            />
           )}
 
           {activeTab === "orders" && (
@@ -271,17 +306,47 @@ export default function AdminDashboard() {
             <AdminPayments />
           )}
 
+          {activeTab === "merchants" && (
+            <AdminMerchants />
+          )}
+
           {activeTab === "settings" && (
             <AdminSettings />
           )}
         </div>
+
+        {/* Product Form Modal */}
+        <AnimatePresence>
+          {showProductForm && (
+            <ProductForm
+              product={editingProduct}
+              onClose={() => {
+                setShowProductForm(false);
+                setEditingProduct(null);
+              }}
+              onSave={() => {
+                setShowProductForm(false);
+                setEditingProduct(null);
+                fetchStats();
+              }}
+            />
+          )}
+        </AnimatePresence>
       </main>
     </div>
   );
 }
 
 // Products Management Component
-function AdminProducts() {
+interface AdminProductsProps {
+  showForm: boolean;
+  setShowForm: (show: boolean) => void;
+  editingProduct: any;
+  setEditingProduct: (product: any) => void;
+  onRefresh: () => void;
+}
+
+function AdminProducts({ showForm, setShowForm, editingProduct, setEditingProduct, onRefresh }: AdminProductsProps) {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -301,6 +366,26 @@ function AdminProducts() {
     setLoading(false);
   };
 
+  const handleDelete = async (id: string) => {
+    if (!confirm("هل أنت متأكد من حذف هذا المنتج؟")) return;
+    
+    const { error } = await supabase.from("products").delete().eq("id", id);
+    if (!error) {
+      toast({ title: "تم حذف المنتج" });
+      fetchProducts();
+      onRefresh();
+    }
+  };
+
+  const handleToggle = async (product: any) => {
+    const { error } = await supabase
+      .from("products")
+      .update({ is_active: !product.is_active })
+      .eq("id", product.id);
+    
+    if (!error) fetchProducts();
+  };
+
   if (loading) {
     return <div className="text-center py-8">جاري التحميل...</div>;
   }
@@ -309,14 +394,20 @@ function AdminProducts() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="font-bold">قائمة المنتجات ({products.length})</h3>
-        <Button>إضافة منتج جديد</Button>
+        <Button onClick={() => setShowForm(true)}>
+          <Plus className="h-4 w-4 ml-2" />
+          إضافة منتج جديد
+        </Button>
       </div>
 
       {products.length === 0 ? (
         <div className="bg-card rounded-2xl p-8 text-center">
           <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <p className="text-muted-foreground">لا توجد منتجات بعد</p>
-          <Button className="mt-4">أضف أول منتج</Button>
+          <Button className="mt-4" onClick={() => setShowForm(true)}>
+            <Plus className="h-4 w-4 ml-2" />
+            أضف أول منتج
+          </Button>
         </div>
       ) : (
         <div className="bg-card rounded-2xl overflow-hidden shadow-card">
@@ -341,20 +432,52 @@ function AdminProducts() {
                           alt={product.name}
                           className="h-10 w-10 rounded-lg object-cover"
                         />
-                        <span className="font-medium">{product.name}</span>
+                        <div>
+                          <span className="font-medium block">{product.name}</span>
+                          <span className="text-xs text-muted-foreground">{product.categories?.name}</span>
+                        </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3">{product.price} دج</td>
+                    <td className="px-4 py-3">
+                      <span className="font-bold text-primary">{product.price} دج</span>
+                      {product.original_price && (
+                        <span className="text-xs text-muted-foreground line-through block">
+                          {product.original_price} دج
+                        </span>
+                      )}
+                    </td>
                     <td className="px-4 py-3">{product.stock_quantity}</td>
                     <td className="px-4 py-3">
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        product.is_active ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
-                      }`}>
+                      <button
+                        onClick={() => handleToggle(product)}
+                        className={`px-2 py-1 rounded-full text-xs cursor-pointer ${
+                          product.is_active ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
+                        }`}
+                      >
                         {product.is_active ? "نشط" : "معطل"}
-                      </span>
+                      </button>
                     </td>
                     <td className="px-4 py-3">
-                      <Button variant="ghost" size="sm">تعديل</Button>
+                      <div className="flex gap-1">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => {
+                            setEditingProduct(product);
+                            setShowForm(true);
+                          }}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                          onClick={() => handleDelete(product.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -502,6 +625,130 @@ function AdminPayments() {
                 )}
               </div>
             </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Merchants Management Component
+function AdminMerchants() {
+  const [requests, setRequests] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchRequests();
+  }, []);
+
+  const fetchRequests = async () => {
+    const { data, error } = await supabase
+      .from("merchant_requests")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setRequests(data);
+    }
+    setLoading(false);
+  };
+
+  const handleApprove = async (request: any) => {
+    // Update request status
+    const { error: requestError } = await supabase
+      .from("merchant_requests")
+      .update({ status: "approved", reviewed_at: new Date().toISOString() })
+      .eq("id", request.id);
+
+    if (requestError) {
+      toast({ title: "خطأ في الموافقة", variant: "destructive" });
+      return;
+    }
+
+    // Update user role to merchant
+    const { error: roleError } = await supabase
+      .from("user_roles")
+      .update({ role: "merchant" })
+      .eq("user_id", request.user_id);
+
+    if (!roleError) {
+      toast({ title: "تمت الموافقة على طلب البائع" });
+      fetchRequests();
+    }
+  };
+
+  const handleReject = async (request: any) => {
+    const { error } = await supabase
+      .from("merchant_requests")
+      .update({ status: "rejected", reviewed_at: new Date().toISOString() })
+      .eq("id", request.id);
+
+    if (!error) {
+      toast({ title: "تم رفض الطلب" });
+      fetchRequests();
+    }
+  };
+
+  const statusLabels: Record<string, { label: string; color: string }> = {
+    pending: { label: "قيد المراجعة", color: "bg-yellow-100 text-yellow-700" },
+    approved: { label: "موافق عليه", color: "bg-primary/10 text-primary" },
+    rejected: { label: "مرفوض", color: "bg-red-100 text-red-700" },
+  };
+
+  if (loading) {
+    return <div className="text-center py-8">جاري التحميل...</div>;
+  }
+
+  return (
+    <div className="space-y-4">
+      <h3 className="font-bold">طلبات البائعين ({requests.length})</h3>
+
+      {requests.length === 0 ? (
+        <div className="bg-card rounded-2xl p-8 text-center shadow-card">
+          <Store className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <p className="text-muted-foreground">لا توجد طلبات بائعين بعد</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {requests.map((request) => (
+            <motion.div
+              key={request.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-card rounded-2xl p-4 shadow-card"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h4 className="font-bold">{request.business_name}</h4>
+                  <p className="text-sm text-muted-foreground">{request.wilaya}</p>
+                </div>
+                <span className={`px-2 py-1 rounded-full text-xs ${statusLabels[request.status]?.color}`}>
+                  {statusLabels[request.status]?.label}
+                </span>
+              </div>
+              
+              <p className="text-sm text-muted-foreground mb-3">{request.business_description}</p>
+              
+              <div className="flex items-center justify-between">
+                <span className="text-sm">📞 {request.phone}</span>
+                {request.status === "pending" && (
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={() => handleApprove(request)}>
+                      <CheckCircle className="h-4 w-4 ml-1" />
+                      موافقة
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      className="text-destructive"
+                      onClick={() => handleReject(request)}
+                    >
+                      رفض
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
           ))}
         </div>
       )}

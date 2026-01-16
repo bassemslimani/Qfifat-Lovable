@@ -112,11 +112,11 @@ export default function Account() {
           {/* Quick Actions */}
           <div className="grid grid-cols-3 gap-3 mt-6">
             <button 
-              onClick={() => navigate("/cart")}
+              onClick={() => navigate("/merchant")}
               className="bg-primary-foreground/10 rounded-xl p-3 text-center"
             >
               <ShoppingBag className="h-5 w-5 mx-auto mb-1" />
-              <span className="text-xs">طلباتي</span>
+              <span className="text-xs">لوحة البائع</span>
             </button>
             <button className="bg-primary-foreground/10 rounded-xl p-3 text-center">
               <Heart className="h-5 w-5 mx-auto mb-1" />
