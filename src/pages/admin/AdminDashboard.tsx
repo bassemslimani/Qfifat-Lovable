@@ -25,6 +25,8 @@ import {
   Star,
   Ticket,
   BarChart3,
+  Home,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -195,8 +197,17 @@ export default function AdminDashboard() {
             ))}
           </nav>
 
-          {/* Logout */}
-          <div className="p-4 border-t border-border">
+          {/* Back to Site & Logout */}
+          <div className="p-4 border-t border-border space-y-2">
+            <Button
+              variant="default"
+              className="w-full justify-start gap-3"
+              onClick={() => navigate("/")}
+            >
+              <Home className="h-5 w-5" />
+              العودة للموقع
+              <ExternalLink className="h-4 w-4 mr-auto" />
+            </Button>
             <Button
               variant="outline"
               className="w-full justify-start gap-3"
