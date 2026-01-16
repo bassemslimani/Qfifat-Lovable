@@ -7,6 +7,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   isAdmin: boolean;
+  isMerchant: boolean;
   signOut: () => Promise<void>;
 }
 
@@ -17,64 +18,106 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isMerchant, setIsMerchant] = useState(false);
 
-  useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        // Defer role check to avoid deadlock
-        if (session?.user) {
-          setTimeout(() => {
-            checkUserRole(session.user.id);
-          }, 0);
-        } else {
-          setIsAdmin(false);
-        }
-      }
-    );
-
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        checkUserRole(session.user.id);
-      }
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const checkUserRole = async (userId: string) => {
+  const checkUserRole = async (userId: string): Promise<{ isAdmin: boolean; isMerchant: boolean }> => {
     try {
       const { data, error } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", userId)
-        .single();
+        .eq("user_id", userId);
 
-      if (!error && data) {
-        setIsAdmin(data.role === "admin");
+      if (error) {
+        console.error("Error checking user role:", error);
+        return { isAdmin: false, isMerchant: false };
       }
+
+      if (data && data.length > 0) {
+        const roles = data.map(r => r.role);
+        return {
+          isAdmin: roles.includes("admin"),
+          isMerchant: roles.includes("merchant")
+        };
+      }
+      
+      return { isAdmin: false, isMerchant: false };
     } catch (error) {
       console.error("Error checking user role:", error);
+      return { isAdmin: false, isMerchant: false };
     }
   };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const initializeAuth = async () => {
+      try {
+        // Get existing session
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (isMounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          
+          if (session?.user) {
+            const roles = await checkUserRole(session.user.id);
+            if (isMounted) {
+              setIsAdmin(roles.isAdmin);
+              setIsMerchant(roles.isMerchant);
+            }
+          }
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Auth initialization error:", error);
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    initializeAuth();
+
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (isMounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          
+          if (session?.user) {
+            // Use setTimeout to avoid potential deadlock
+            setTimeout(async () => {
+              const roles = await checkUserRole(session.user.id);
+              if (isMounted) {
+                setIsAdmin(roles.isAdmin);
+                setIsMerchant(roles.isMerchant);
+              }
+            }, 0);
+          } else {
+            setIsAdmin(false);
+            setIsMerchant(false);
+          }
+        }
+      }
+    );
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const signOut = async () => {
     await supabase.auth.signOut();
     setUser(null);
     setSession(null);
     setIsAdmin(false);
+    setIsMerchant(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, isAdmin, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, isAdmin, isMerchant, signOut }}>
       {children}
     </AuthContext.Provider>
   );
