@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { 
   Store, ArrowLeft, CheckCircle, Clock, AlertCircle, 
-  Phone, MapPin, FileText, Loader2 
+  Phone, MapPin, FileText, Loader2, XCircle, HourglassIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,10 +21,17 @@ const wilayas = [
   "قسنطينة", "المدية", "مستغانم", "المسيلة", "معسكر", "ورقلة", "وهران"
 ];
 
+type RequestStatus = "pending" | "approved" | "rejected" | null;
+
 export default function BecomeMerchant() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [checkingRequest, setCheckingRequest] = useState(true);
+  const [existingRequest, setExistingRequest] = useState<{
+    status: RequestStatus;
+    businessName: string;
+  } | null>(null);
   const [submitted, setSubmitted] = useState(false);
   
   const [formData, setFormData] = useState({
@@ -33,6 +40,39 @@ export default function BecomeMerchant() {
     phone: "",
     wilaya: "",
   });
+
+  // Check if user already has a merchant request
+  useEffect(() => {
+    const checkExistingRequest = async () => {
+      if (!user) {
+        setCheckingRequest(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from("merchant_requests")
+          .select("status, business_name")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .single();
+
+        if (data && !error) {
+          setExistingRequest({
+            status: data.status as RequestStatus,
+            businessName: data.business_name,
+          });
+        }
+      } catch (error) {
+        // No existing request
+      } finally {
+        setCheckingRequest(false);
+      }
+    };
+
+    checkExistingRequest();
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,7 +118,25 @@ export default function BecomeMerchant() {
     }
   };
 
-  if (submitted) {
+  // Loading state
+  if (checkingRequest) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container py-12 flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+        <BottomNav />
+      </div>
+    );
+  }
+
+  // Show existing request status
+  if (existingRequest) {
+    const isPending = existingRequest.status === "pending";
+    const isApproved = existingRequest.status === "approved";
+    const isRejected = existingRequest.status === "rejected";
+
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -86,17 +144,41 @@ export default function BecomeMerchant() {
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6"
+            className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${
+              isPending ? "bg-warning/10" : isApproved ? "bg-primary/10" : "bg-destructive/10"
+            }`}
           >
-            <CheckCircle className="h-10 w-10 text-primary" />
+            {isPending && <HourglassIcon className="h-10 w-10 text-warning" />}
+            {isApproved && <CheckCircle className="h-10 w-10 text-primary" />}
+            {isRejected && <XCircle className="h-10 w-10 text-destructive" />}
           </motion.div>
-          <h1 className="text-2xl font-bold text-foreground mb-2">تم إرسال طلبك!</h1>
-          <p className="text-muted-foreground mb-6">
-            سيقوم فريقنا بمراجعة طلبك والتواصل معك خلال 48 ساعة
+          
+          <h1 className="text-2xl font-bold text-foreground mb-2">
+            {isPending && "طلبك قيد المراجعة"}
+            {isApproved && "تم قبول طلبك!"}
+            {isRejected && "تم رفض طلبك"}
+          </h1>
+          
+          <p className="text-muted-foreground mb-2">
+            <span className="font-semibold">{existingRequest.businessName}</span>
           </p>
-          <Button onClick={() => navigate("/")} variant="hero">
-            العودة للرئيسية
-          </Button>
+          
+          <p className="text-muted-foreground mb-6">
+            {isPending && "لديك طلب معلق لدى الإدارة، سيتم مراجعته والتواصل معك قريباً"}
+            {isApproved && "يمكنك الآن الوصول إلى لوحة تحكم البائع"}
+            {isRejected && "للأسف تم رفض طلبك، يمكنك التواصل معنا لمعرفة المزيد"}
+          </p>
+          
+          {isApproved ? (
+            <Button onClick={() => navigate("/merchant")} variant="hero">
+              الذهاب للوحة التحكم
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          ) : (
+            <Button onClick={() => navigate("/")} variant="outline">
+              العودة للرئيسية
+            </Button>
+          )}
         </div>
         <BottomNav />
       </div>
