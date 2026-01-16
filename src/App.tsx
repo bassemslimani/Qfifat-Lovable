@@ -12,6 +12,7 @@ import Checkout from "./pages/Checkout";
 import ProductDetails from "./pages/ProductDetails";
 import Products from "./pages/Products";
 import Account from "./pages/Account";
+import AccountSettings from "./pages/AccountSettings";
 import BecomeMerchant from "./pages/BecomeMerchant";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import MerchantDashboard from "./pages/merchant/MerchantDashboard";
@@ -40,6 +41,7 @@ const App = () => (
               <Route path="/product/:id" element={<ProductDetails />} />
               <Route path="/products" element={<Products />} />
               <Route path="/account" element={<Account />} />
+              <Route path="/account/settings" element={<AccountSettings />} />
               <Route path="/become-merchant" element={<BecomeMerchant />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/merchant" element={<MerchantDashboard />} />

@@ -118,7 +118,10 @@ export default function Account() {
               <ShoppingBag className="h-5 w-5 mx-auto mb-1" />
               <span className="text-xs">لوحة البائع</span>
             </button>
-            <button className="bg-primary-foreground/10 rounded-xl p-3 text-center">
+            <button 
+              onClick={() => navigate("/favorites")}
+              className="bg-primary-foreground/10 rounded-xl p-3 text-center"
+            >
               <Heart className="h-5 w-5 mx-auto mb-1" />
               <span className="text-xs">المفضلة</span>
             </button>
@@ -214,7 +217,10 @@ export default function Account() {
         {/* Settings Tab */}
         {activeTab === "settings" && (
           <div className="space-y-3">
-            <button className="w-full bg-card rounded-2xl p-4 shadow-card flex items-center justify-between">
+            <button 
+              onClick={() => navigate("/account/settings")}
+              className="w-full bg-card rounded-2xl p-4 shadow-card flex items-center justify-between"
+            >
               <div className="flex items-center gap-3">
                 <User className="h-5 w-5 text-primary" />
                 <span className="font-medium">تعديل الملف الشخصي</span>
