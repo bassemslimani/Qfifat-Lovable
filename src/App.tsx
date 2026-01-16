@@ -22,6 +22,8 @@ import Install from "./pages/Install";
 import Invoice from "./pages/Invoice";
 import Favorites from "./pages/Favorites";
 import CategoryProducts from "./pages/CategoryProducts";
+import MyAddresses from "./pages/MyAddresses";
+import MyNotifications from "./pages/MyNotifications";
 import NotFound from "./pages/NotFound";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 
@@ -46,6 +48,8 @@ const App = () => (
               <Route path="/category/:id" element={<CategoryProducts />} />
               <Route path="/account" element={<Account />} />
               <Route path="/account/settings" element={<AccountSettings />} />
+              <Route path="/account/addresses" element={<MyAddresses />} />
+              <Route path="/account/notifications" element={<MyNotifications />} />
               <Route path="/become-merchant" element={<BecomeMerchant />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/merchant" element={<MerchantDashboard />} />
