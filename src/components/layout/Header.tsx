@@ -1,18 +1,28 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Search, ShoppingCart, User, X, Menu } from "lucide-react";
+import { Search, ShoppingCart, User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/hooks/useAuth";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import logo from "@/assets/logo.png";
 
 export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { itemCount } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 glass-effect border-b border-border/50">
@@ -28,18 +38,20 @@ export function Header() {
           </div>
 
           {/* Search - Desktop */}
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
+          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-8">
             <div className="relative w-full">
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="ابحث عن منتج..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="pr-10 bg-secondary/50 border-0 focus-visible:ring-primary"
               />
             </div>
-          </div>
+          </form>
 
           {/* Actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             {/* Search Toggle - Mobile */}
             <Button
               variant="ghost"
@@ -49,6 +61,9 @@ export function Header() {
             >
               {isSearchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
             </Button>
+
+            {/* Notifications */}
+            {user && <NotificationBell />}
 
             {/* User */}
             <Button 
@@ -83,21 +98,24 @@ export function Header() {
         {/* Mobile Search */}
         <AnimatePresence>
           {isSearchOpen && (
-            <motion.div
+            <motion.form
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
+              onSubmit={handleSearch}
               className="md:hidden overflow-hidden pb-4"
             >
               <div className="relative">
                 <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="ابحث عن منتج..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="pr-10 bg-secondary/50 border-0"
                   autoFocus
                 />
               </div>
-            </motion.div>
+            </motion.form>
           )}
         </AnimatePresence>
       </div>

@@ -20,12 +20,17 @@ import {
   Trash2,
   Eye,
   Store,
+  Grid3X3,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { ProductForm } from "@/components/admin/ProductForm";
+import { UsersManagement } from "@/components/admin/UsersManagement";
+import { CategoriesManagement } from "@/components/admin/CategoriesManagement";
+import { InvoicesManagement } from "@/components/admin/InvoicesManagement";
 import logo from "@/assets/logo.png";
 
 interface Stats {
@@ -84,8 +89,10 @@ export default function AdminDashboard() {
   const menuItems = [
     { id: "dashboard", label: "لوحة التحكم", icon: LayoutDashboard },
     { id: "products", label: "المنتجات", icon: Package },
+    { id: "categories", label: "الفئات", icon: Grid3X3 },
     { id: "orders", label: "الطلبات", icon: ShoppingCart },
     { id: "payments", label: "المدفوعات", icon: CreditCard },
+    { id: "invoices", label: "الفواتير", icon: FileText },
     { id: "merchants", label: "طلبات البائعين", icon: Store },
     { id: "users", label: "المستخدمين", icon: Users },
     { id: "settings", label: "الإعدادات", icon: Settings },
@@ -308,6 +315,18 @@ export default function AdminDashboard() {
 
           {activeTab === "merchants" && (
             <AdminMerchants />
+          )}
+
+          {activeTab === "categories" && (
+            <CategoriesManagement />
+          )}
+
+          {activeTab === "users" && (
+            <UsersManagement />
+          )}
+
+          {activeTab === "invoices" && (
+            <InvoicesManagement />
           )}
 
           {activeTab === "settings" && (
