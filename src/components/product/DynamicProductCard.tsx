@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Heart, Plus, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ProductCardSkeleton } from "@/components/ui/ProductSkeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/context/CartContext";
 import { useFavorites } from "@/hooks/useFavorites";
@@ -202,13 +203,14 @@ export function DynamicProductsSection({
     return (
       <section className="py-8">
         <div className="container">
-          <div className="animate-pulse space-y-4">
-            <div className="h-6 w-32 bg-secondary rounded" />
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="aspect-square bg-secondary rounded-2xl" />
-              ))}
-            </div>
+          <div className="flex items-center justify-between mb-6">
+            <div className="h-6 w-32 bg-secondary rounded animate-pulse" />
+            <div className="h-4 w-16 bg-secondary rounded animate-pulse" />
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {Array.from({ length: Math.min(limit, 4) }).map((_, i) => (
+              <ProductCardSkeleton key={i} />
+            ))}
           </div>
         </div>
       </section>

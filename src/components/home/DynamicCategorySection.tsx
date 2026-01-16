@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { CategoryListSkeleton } from "@/components/ui/ProductSkeleton";
 
 interface Category {
   id: string;
@@ -11,6 +12,7 @@ interface Category {
 
 export function DynamicCategorySection() {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,7 +29,24 @@ export function DynamicCategorySection() {
     if (!error && data) {
       setCategories(data);
     }
+    setLoading(false);
   };
+
+  if (loading) {
+    return (
+      <section className="py-8">
+        <div className="container">
+          <div className="flex items-center justify-between mb-6">
+            <div className="h-6 w-20 bg-secondary rounded animate-pulse" />
+            <div className="h-4 w-16 bg-secondary rounded animate-pulse" />
+          </div>
+          <CategoryListSkeleton />
+        </div>
+      </section>
+    );
+  }
+
+  if (categories.length === 0) return null;
 
   return (
     <section className="py-8">
