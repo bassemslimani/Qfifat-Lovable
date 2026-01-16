@@ -49,10 +49,11 @@ const queryClient = new QueryClient({
 
 const App = () => {
   const [showSplash, setShowSplash] = useState(() => {
-    // Only show splash on first visit or PWA
+    // Show splash on PWA standalone mode OR first visit in session
     const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
     const hasSeenSplash = sessionStorage.getItem("splash-shown");
-    return isStandalone && !hasSeenSplash;
+    // Always show for standalone PWA, or first visit in browser
+    return isStandalone || !hasSeenSplash;
   });
 
   const handleSplashComplete = () => {
