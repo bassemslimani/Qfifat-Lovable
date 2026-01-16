@@ -8,6 +8,7 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { ProductReviews } from "@/components/product/ProductReviews";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/context/CartContext";
+import { useFavorites } from "@/hooks/useFavorites";
 import { toast } from "@/hooks/use-toast";
 interface Product {
   id: string;
@@ -29,12 +30,12 @@ export default function ProductDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addItem } = useCart();
+  const { isFavorite, toggleFavorite, isToggling } = useFavorites();
   
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -146,12 +147,13 @@ export default function ProductDetails() {
             {/* Actions */}
             <div className="absolute top-4 left-4 flex gap-2">
               <button
-                onClick={() => setIsFavorite(!isFavorite)}
-                className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md ${
-                  isFavorite ? "bg-red-500 text-white" : "bg-card text-muted-foreground"
+                onClick={() => product && toggleFavorite(product.id)}
+                disabled={isToggling}
+                className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-colors ${
+                  product && isFavorite(product.id) ? "bg-red-500 text-white" : "bg-card text-muted-foreground"
                 }`}
               >
-                <Heart className={`h-5 w-5 ${isFavorite ? "fill-current" : ""}`} />
+                <Heart className={`h-5 w-5 ${product && isFavorite(product.id) ? "fill-current" : ""}`} />
               </button>
               <button className="w-10 h-10 rounded-full bg-card flex items-center justify-center shadow-md text-muted-foreground">
                 <Share2 className="h-5 w-5" />
