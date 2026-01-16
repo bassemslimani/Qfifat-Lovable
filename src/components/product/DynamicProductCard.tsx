@@ -5,6 +5,8 @@ import { Heart, Plus, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/context/CartContext";
+import { useFavorites } from "@/hooks/useFavorites";
+import { cn } from "@/lib/utils";
 
 interface Product {
   id: string;
@@ -27,6 +29,9 @@ interface DynamicProductCardProps {
 export function DynamicProductCard({ product, index = 0 }: DynamicProductCardProps) {
   const navigate = useNavigate();
   const { addItem } = useCart();
+  const { isFavorite, toggleFavorite, isToggling } = useFavorites();
+  
+  const isProductFavorite = isFavorite(product.id);
   
   const discount = product.original_price
     ? Math.round(((product.original_price - product.price) / product.original_price) * 100)
@@ -46,6 +51,11 @@ export function DynamicProductCard({ product, index = 0 }: DynamicProductCardPro
       rating: product.rating,
       reviewCount: product.review_count,
     });
+  };
+
+  const handleToggleFavorite = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleFavorite(product.id);
   };
 
   return (
@@ -81,10 +91,16 @@ export function DynamicProductCard({ product, index = 0 }: DynamicProductCardPro
         {/* Favorite Button */}
         <motion.button
           whileTap={{ scale: 0.9 }}
-          onClick={(e) => e.stopPropagation()}
-          className="absolute top-3 left-3 w-8 h-8 bg-card/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm"
+          onClick={handleToggleFavorite}
+          disabled={isToggling}
+          className={cn(
+            "absolute top-3 left-3 w-8 h-8 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm transition-colors",
+            isProductFavorite 
+              ? "bg-red-500 text-white" 
+              : "bg-card/80 text-muted-foreground hover:bg-card"
+          )}
         >
-          <Heart className="h-4 w-4 text-muted-foreground" />
+          <Heart className={cn("h-4 w-4", isProductFavorite && "fill-current")} />
         </motion.button>
 
         {/* Quick Add */}
