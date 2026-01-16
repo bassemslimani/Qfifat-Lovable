@@ -67,13 +67,13 @@ export function ProductForm({ product, onClose, onSave }: ProductFormProps) {
       const filePath = `products/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from("payment-proofs")
+        .from("products")
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
       const { data: urlData } = supabase.storage
-        .from("payment-proofs")
+        .from("products")
         .getPublicUrl(filePath);
 
       if (isMain) {
