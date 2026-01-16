@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Star, Check, X, Trash2 } from "lucide-react";
@@ -110,16 +109,16 @@ export const ReviewsManagement = () => {
   return (
     <div className="space-y-6">
       {/* Pending Reviews */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <span>التقييمات المعلقة</span>
+      <div className="bg-card rounded-2xl shadow-card overflow-hidden">
+        <div className="p-4 border-b border-border">
+          <div className="flex items-center gap-2">
+            <h3 className="font-bold text-foreground">التقييمات المعلقة</h3>
             {pendingReviews.length > 0 && (
               <Badge variant="secondary">{pendingReviews.length}</Badge>
             )}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </div>
+        </div>
+        <div className="p-4">
           {pendingReviews.length === 0 ? (
             <p className="text-muted-foreground text-center py-4">
               لا توجد تقييمات معلقة
@@ -129,30 +128,30 @@ export const ReviewsManagement = () => {
               {pendingReviews.map((review) => (
                 <div
                   key={review.id}
-                  className="border rounded-lg p-4 space-y-3"
+                  className="bg-secondary/30 rounded-xl p-4 space-y-3"
                 >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="font-medium">{review.products?.name}</p>
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-medium text-foreground truncate">{review.products?.name}</p>
                       <p className="text-sm text-muted-foreground">
                         بواسطة: {review.profiles?.full_name || "مستخدم مجهول"}
                       </p>
                     </div>
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">
                       {format(new Date(review.created_at), "d MMM yyyy", { locale: ar })}
                     </span>
                   </div>
                   {renderStars(review.rating)}
                   {review.comment && (
-                    <p className="text-muted-foreground">{review.comment}</p>
+                    <p className="text-muted-foreground text-sm break-words">{review.comment}</p>
                   )}
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <Button
                       size="sm"
                       onClick={() =>
                         approveReviewMutation.mutate({ id: review.id, approved: true })
                       }
-                      className="gap-1"
+                      className="flex-1 sm:flex-none gap-1"
                     >
                       <Check className="w-4 h-4" />
                       قبول
@@ -161,7 +160,7 @@ export const ReviewsManagement = () => {
                       size="sm"
                       variant="destructive"
                       onClick={() => deleteReviewMutation.mutate(review.id)}
-                      className="gap-1"
+                      className="flex-1 sm:flex-none gap-1"
                     >
                       <X className="w-4 h-4" />
                       رفض وحذف
@@ -171,15 +170,15 @@ export const ReviewsManagement = () => {
               ))}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Approved Reviews */}
-      <Card>
-        <CardHeader>
-          <CardTitle>التقييمات المعتمدة ({approvedReviews.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="bg-card rounded-2xl shadow-card overflow-hidden">
+        <div className="p-4 border-b border-border">
+          <h3 className="font-bold text-foreground">التقييمات المعتمدة ({approvedReviews.length})</h3>
+        </div>
+        <div className="p-4">
           {approvedReviews.length === 0 ? (
             <p className="text-muted-foreground text-center py-4">
               لا توجد تقييمات معتمدة
@@ -189,11 +188,11 @@ export const ReviewsManagement = () => {
               {approvedReviews.map((review) => (
                 <div
                   key={review.id}
-                  className="border rounded-lg p-4 space-y-2"
+                  className="bg-secondary/30 rounded-xl p-4 space-y-2"
                 >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="font-medium">{review.products?.name}</p>
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-foreground truncate">{review.products?.name}</p>
                       <p className="text-sm text-muted-foreground">
                         {review.profiles?.full_name || "مستخدم مجهول"}
                       </p>
@@ -203,6 +202,7 @@ export const ReviewsManagement = () => {
                       <Button
                         size="icon"
                         variant="ghost"
+                        className="h-8 w-8"
                         onClick={() => deleteReviewMutation.mutate(review.id)}
                       >
                         <Trash2 className="w-4 h-4 text-destructive" />
@@ -210,14 +210,14 @@ export const ReviewsManagement = () => {
                     </div>
                   </div>
                   {review.comment && (
-                    <p className="text-muted-foreground text-sm">{review.comment}</p>
+                    <p className="text-muted-foreground text-sm break-words">{review.comment}</p>
                   )}
                 </div>
               ))}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };

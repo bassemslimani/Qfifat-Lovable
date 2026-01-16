@@ -182,29 +182,30 @@ export default function MyAddresses() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20" dir="rtl">
+    <div className="min-h-screen bg-background pt-14 pb-20" dir="rtl">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b">
-        <div className="container py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b pt-safe">
+        <div className="container py-3">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-3 min-w-0">
               <button
                 onClick={() => navigate(-1)}
-                className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center"
+                className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0"
               >
                 <ArrowRight className="h-5 w-5" />
               </button>
-              <h1 className="text-xl font-bold">عناوين التوصيل</h1>
+              <h1 className="text-lg font-bold truncate">عناوين التوصيل</h1>
             </div>
-            <Button size="sm" onClick={() => setShowForm(true)}>
+            <Button size="sm" onClick={() => setShowForm(true)} className="flex-shrink-0">
               <Plus className="h-4 w-4 ml-1" />
-              إضافة عنوان
+              <span className="hidden sm:inline">إضافة عنوان</span>
+              <span className="sm:hidden">إضافة</span>
             </Button>
           </div>
         </div>
       </header>
 
-      <main className="container py-6">
+      <main className="container py-6 pt-safe">
         {addresses.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}

@@ -320,9 +320,9 @@ export default function Checkout() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-8">
+    <div className="min-h-screen bg-background pt-14 pb-8">
       <Header />
-      <main className="container py-6">
+      <main className="container py-6 pt-safe">
         {/* Progress */}
         <div className="flex items-center justify-center gap-2 mb-8">
           <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
