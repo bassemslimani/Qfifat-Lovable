@@ -21,6 +21,7 @@ import TrackOrder from "./pages/TrackOrder";
 import Install from "./pages/Install";
 import Invoice from "./pages/Invoice";
 import Favorites from "./pages/Favorites";
+import CategoryProducts from "./pages/CategoryProducts";
 import NotFound from "./pages/NotFound";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 
@@ -42,6 +43,7 @@ const App = () => (
               <Route path="/product/:id" element={<ProductDetails />} />
               <Route path="/products" element={<Products />} />
               <Route path="/categories" element={<Categories />} />
+              <Route path="/category/:id" element={<CategoryProducts />} />
               <Route path="/account" element={<Account />} />
               <Route path="/account/settings" element={<AccountSettings />} />
               <Route path="/become-merchant" element={<BecomeMerchant />} />
