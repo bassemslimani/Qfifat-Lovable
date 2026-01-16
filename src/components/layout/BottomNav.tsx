@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Home, Grid3X3, ShoppingCart, User, Heart } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 
 interface NavItem {
@@ -11,6 +12,8 @@ interface NavItem {
 
 export function BottomNav() {
   const { itemCount } = useCart();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const navItems: NavItem[] = [
     { icon: Home, label: "الرئيسية", path: "/" },
@@ -20,13 +23,21 @@ export function BottomNav() {
     { icon: User, label: "حسابي", path: "/account" },
   ];
 
+  const isActive = (path: string) => {
+    if (path === "/") return location.pathname === "/";
+    return location.pathname.startsWith(path);
+  };
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 glass-effect border-t border-border/50 pb-safe">
       <div className="flex items-center justify-around h-16">
-        {navItems.map((item, index) => (
+        {navItems.map((item) => (
           <motion.button
             key={item.path}
-            className="flex flex-col items-center justify-center gap-1 flex-1 h-full relative text-muted-foreground hover:text-primary transition-colors"
+            onClick={() => navigate(item.path)}
+            className={`flex flex-col items-center justify-center gap-1 flex-1 h-full relative transition-colors ${
+              isActive(item.path) ? "text-primary" : "text-muted-foreground hover:text-primary"
+            }`}
             whileTap={{ scale: 0.9 }}
           >
             <div className="relative">
@@ -42,7 +53,7 @@ export function BottomNav() {
               )}
             </div>
             <span className="text-[10px] font-medium">{item.label}</span>
-            {index === 0 && (
+            {isActive(item.path) && (
               <motion.div
                 layoutId="activeTab"
                 className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary rounded-b-full"
