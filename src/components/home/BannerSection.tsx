@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Percent, ArrowLeft } from "lucide-react";
-
+import { useNavigate } from "react-router-dom";
 export function BannerSection() {
+  const navigate = useNavigate();
+
   return (
     <section className="py-8">
       <div className="container">
@@ -24,7 +26,12 @@ export function BannerSection() {
               <p className="text-sm opacity-90 mb-3">
                 سجل كتاجر واحصل على خصومات حصرية
               </p>
-              <Button variant="secondary" size="sm" className="group">
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                className="group"
+                onClick={() => navigate('/become-merchant')}
+              >
                 سجل الآن
                 <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
               </Button>
