@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل استخدام قفيفات - EURL B Premier</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #166534;
+            --primary-light: #22c55e;
+            --primary-dark: #14532d;
+            --background: #f0fdf4;
+            --card: #ffffff;
+            --text: #1a1a1a;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.8;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            animation: float 20s linear infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-20px, 20px) rotate(360deg); }
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .logo-container {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .logo-container img {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .powered-by {
+            margin-top: 24px;
+            padding: 8px 20px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50px;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+        
+        /* Navigation */
+        .nav {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            overflow-x: auto;
+        }
+        
+        .nav ul {
+            list-style: none;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .nav a {
+            text-decoration: none;
+            color: var(--text-muted);
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: block;
+        }
+        
+        .nav a:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* Section Styling */
+        .section {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 32px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--primary);
+        }
+        
+        .section-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .section-title h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .section p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+        
+        /* Phone Mockup */
+        .phone-mockup {
+            width: 280px;
+            height: 560px;
+            background: #1a1a1a;
+            border-radius: 40px;
+            padding: 12px;
+            margin: 24px auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        .phone-mockup::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 24px;
+            background: #1a1a1a;
+            border-radius: 0 0 20px 20px;
+            z-index: 10;
+        }
+        
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: var(--background);
+            border-radius: 32px;
+            overflow: hidden;
+        }
+        
+        .phone-screen img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+        }
+        
+        /* Desktop Mockup */
+        .desktop-mockup {
+            background: #2a2a2a;
+            border-radius: 16px;
+            padding: 12px;
+            margin: 24px auto;
+            max-width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .desktop-screen {
+            background: var(--background);
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
+        
+        .desktop-screen img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+        }
+        
+        /* Feature Grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+        
+        .feature-card {
+            background: var(--background);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
+        }
+        
+        .feature-card .icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+        
+        .feature-card h4 {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        
+        .feature-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+        
+        /* Admin Dashboard Mockup */
+        .admin-mockup {
+            background: #f8fafc;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            margin: 24px 0;
+        }
+        
+        .admin-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .admin-header h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        
+        .admin-body {
+            display: flex;
+            min-height: 400px;
+        }
+        
+        .admin-sidebar {
+            width: 200px;
+            background: white;
+            border-left: 1px solid var(--border);
+            padding: 16px;
+        }
+        
+        .admin-sidebar-item {
+            padding: 12px 16px;
+            margin-bottom: 4px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            cursor: default;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .admin-sidebar-item.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .admin-sidebar-item:not(.active) {
+            color: var(--text-muted);
+        }
+        
+        .admin-content {
+            flex: 1;
+            padding: 24px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+        
+        .stat-card .number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        
+        .stat-card .label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        
+        /* Tabs List */
+        .tabs-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 16px 0;
+        }
+        
+        .tab-item {
+            background: var(--background);
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--border);
+        }
+        
+        .tab-item.highlighted {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* Steps */
+        .steps {
+            margin: 24px 0;
+        }
+        
+        .step {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            background: var(--background);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            border-right: 4px solid var(--primary);
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        .step-content h4 {
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--primary);
+        }
+        
+        .step-content p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .footer h3 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+        
+        .footer p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+        
+        .footer .company {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .footer .company strong {
+            font-size: 1.1rem;
+        }
+        
+        /* Print Button */
+        .print-btn {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .print-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.8rem; }
+            .section { padding: 24px; }
+            .admin-body { flex-direction: column; }
+            .admin-sidebar { width: 100%; border-left: none; border-bottom: 1px solid var(--border); }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .phone-mockup { width: 240px; height: 480px; }
+        }
+        
+        @media print {
+            .nav, .print-btn { display: none; }
+            .section { break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-container">
+                <img src="/favicon.png" alt="قفيفات">
+            </div>
+            <h1>دليل استخدام منصة قفيفات</h1>
+            <p>دليل شامل لاستخدام منصة قفيفات للقفف والمنتجات الحرفية الجزائرية - للمستخدمين والبائعين والمدراء</p>
+            <div class="powered-by">
+                🏢 Powered by EURL B Premier
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <ul>
+                <li><a href="#home">🏠 الصفحة الرئيسية</a></li>
+                <li><a href="#products">🛍️ المنتجات</a></li>
+                <li><a href="#categories">📂 الفئات</a></li>
+                <li><a href="#cart">🛒 السلة</a></li>
+                <li><a href="#account">👤 الحساب</a></li>
+                <li><a href="#merchant">🏪 لوحة البائع</a></li>
+                <li><a href="#admin">⚙️ لوحة الإدارة</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Home Section -->
+        <section id="home" class="section">
+            <div class="section-title">
+                <div class="section-icon">🏠</div>
+                <h2>الصفحة الرئيسية</h2>
+            </div>
+            <p>الصفحة الرئيسية هي واجهة المنصة الأولى التي تعرض أبرز المنتجات والفئات. تتضمن:</p>
+            
+            <div class="phone-mockup">
+                <div class="phone-screen">
+                    <img src="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/2568fb16-3d69-4c99-a5ec-5f4059fbe829/9d621231-72d3-4de5-bf08-f096843e064c.lovableproject.com-1768603072811.png" alt="الصفحة الرئيسية">
+                </div>
+            </div>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="icon">🎨</div>
+                    <h4>البانر الرئيسي</h4>
+                    <p>عرض جذاب للعروض والمنتجات المميزة</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">📂</div>
+                    <h4>الفئات</h4>
+                    <p>تصفح سريع حسب نوع المنتج</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">⭐</div>
+                    <h4>المنتجات المميزة</h4>
+                    <p>أحدث وأفضل المنتجات</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">🔍</div>
+                    <h4>البحث السريع</h4>
+                    <p>ابحث عن أي منتج بسهولة</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section id="products" class="section">
+            <div class="section-title">
+                <div class="section-icon">🛍️</div>
+                <h2>صفحة المنتجات</h2>
+            </div>
+            <p>تصفح جميع المنتجات المتوفرة مع إمكانية الفلترة والبحث حسب الفئة أو السعر.</p>
+            
+            <div class="phone-mockup">
+                <div class="phone-screen">
+                    <img src="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4df8879f-801e-4404-890d-aedf9d4a59fd/9d621231-72d3-4de5-bf08-f096843e064c.lovableproject.com-1768603071015.png" alt="صفحة المنتجات">
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="icon">🏷️</div>
+                    <h4>تصنيف بالفئات</h4>
+                    <p>فلتر المنتجات حسب النوع</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">💰</div>
+                    <h4>عروض الخصم</h4>
+                    <p>شاهد نسبة التخفيض على كل منتج</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">❤️</div>
+                    <h4>المفضلة</h4>
+                    <p>أضف المنتجات لقائمة المفضلة</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">⭐</div>
+                    <h4>التقييمات</h4>
+                    <p>شاهد تقييمات العملاء</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories Section -->
+        <section id="categories" class="section">
+            <div class="section-title">
+                <div class="section-icon">📂</div>
+                <h2>صفحة الفئات</h2>
+            </div>
+            <p>استعرض جميع فئات المنتجات المتوفرة واختر الفئة التي تناسبك لتصفح منتجاتها.</p>
+            
+            <div class="phone-mockup">
+                <div class="phone-screen">
+                    <img src="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/afdb0b9c-a37a-445b-97eb-7686b0abc72b/9d621231-72d3-4de5-bf08-f096843e064c.lovableproject.com-1768603076139.png" alt="صفحة الفئات">
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="icon">🧺</div>
+                    <h4>سلال</h4>
+                    <p>سلال يدوية متنوعة</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">🍽️</div>
+                    <h4>صحون</h4>
+                    <p>صحون حرفية تقليدية</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">👜</div>
+                    <h4>حقائب</h4>
+                    <p>حقائب مصنوعة يدوياً</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">📦</div>
+                    <h4>صناديق</h4>
+                    <p>صناديق تخزين أنيقة</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cart Section -->
+        <section id="cart" class="section">
+            <div class="section-title">
+                <div class="section-icon">🛒</div>
+                <h2>سلة التسوق</h2>
+            </div>
+            <p>راجع المنتجات المضافة للسلة، عدّل الكميات، ثم انتقل للدفع لإتمام طلبك.</p>
+            
+            <div class="phone-mockup">
+                <div class="phone-screen">
+                    <img src="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a9c684b6-0aa2-4180-b914-336263cc3b65/9d621231-72d3-4de5-bf08-f096843e064c.lovableproject.com-1768603071109.png" alt="سلة التسوق">
+                </div>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>أضف المنتجات للسلة</h4>
+                        <p>اضغط على زر "أضف للسلة" في صفحة المنتج</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>راجع محتويات السلة</h4>
+                        <p>تحقق من المنتجات والكميات والأسعار</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>أدخل كود الخصم</h4>
+                        <p>إن كان لديك كوبون خصم، أدخله للحصول على تخفيض</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>انتقل للدفع</h4>
+                        <p>أكمل بيانات الشحن واختر طريقة الدفع</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Account Section -->
+        <section id="account" class="section">
+            <div class="section-title">
+                <div class="section-icon">👤</div>
+                <h2>الحساب والتسجيل</h2>
+            </div>
+            <p>سجل دخولك أو أنشئ حساب جديد للاستمتاع بمزايا التسوق وتتبع طلباتك.</p>
+            
+            <div class="phone-mockup">
+                <div class="phone-screen">
+                    <img src="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9ca91806-97fd-4329-850a-51717924180e/9d621231-72d3-4de5-bf08-f096843e064c.lovableproject.com-1768603071239.png" alt="صفحة الحساب">
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="icon">📋</div>
+                    <h4>طلباتي</h4>
+                    <p>تتبع حالة جميع طلباتك</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">❤️</div>
+                    <h4>المفضلة</h4>
+                    <p>المنتجات المحفوظة</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">📍</div>
+                    <h4>العناوين</h4>
+                    <p>إدارة عناوين الشحن</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">⚙️</div>
+                    <h4>الإعدادات</h4>
+                    <p>تعديل بيانات الحساب</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Merchant Dashboard Section -->
+        <section id="merchant" class="section">
+            <div class="section-title">
+                <div class="section-icon">🏪</div>
+                <h2>لوحة تحكم البائع</h2>
+            </div>
+            <p>لوحة خاصة للبائعين المعتمدين لإدارة منتجاتهم ومتابعة طلباتهم وأرباحهم.</p>
+            
+            <!-- Merchant Dashboard Mockup -->
+            <div class="admin-mockup">
+                <div class="admin-header">
+                    <h3>🏪 قفيفات - لوحة البائع</h3>
+                    <span>seller@example.com</span>
+                </div>
+                <div class="admin-body">
+                    <div class="admin-sidebar">
+                        <div class="admin-sidebar-item active">📊 لوحة التحكم</div>
+                        <div class="admin-sidebar-item">📦 منتجاتي</div>
+                        <div class="admin-sidebar-item">🛒 الطلبات</div>
+                        <div class="admin-sidebar-item">💰 الأرباح</div>
+                    </div>
+                    <div class="admin-content">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="number">12</div>
+                                <div class="label">إجمالي المنتجات</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="number">8</div>
+                                <div class="label">منتجات نشطة</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="number">45</div>
+                                <div class="label">الطلبات</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="number">125,000 دج</div>
+                                <div class="label">الأرباح</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin: 24px 0 16px; font-weight: 700;">أقسام لوحة البائع:</h3>
+            <div class="tabs-list">
+                <div class="tab-item highlighted">📊 لوحة التحكم</div>
+                <div class="tab-item">📦 منتجاتي</div>
+                <div class="tab-item">🛒 الطلبات</div>
+                <div class="tab-item">💰 الأرباح</div>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="icon">📊</div>
+                    <h4>لوحة التحكم</h4>
+                    <p>نظرة عامة على الإحصائيات والأداء</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">📦</div>
+                    <h4>إدارة المنتجات</h4>
+                    <p>إضافة وتعديل وحذف المنتجات</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">🛒</div>
+                    <h4>متابعة الطلبات</h4>
+                    <p>عرض وإدارة طلبات العملاء</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">💰</div>
+                    <h4>الأرباح والسحب</h4>
+                    <p>متابعة الأرباح وطلب السحب</p>
+                </div>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>التقديم كبائع</h4>
+                        <p>قدم طلب للانضمام كبائع من صفحة "كن بائعاً"</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>انتظار الموافقة</h4>
+                        <p>سيتم مراجعة طلبك خلال 48 ساعة</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>إضافة المنتجات</h4>
+                        <p>بعد الموافقة، ابدأ بإضافة منتجاتك</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>استلام الأرباح</h4>
+                        <p>تابع مبيعاتك واطلب سحب أرباحك</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin Dashboard Section -->
+        <section id="admin" class="section">
+            <div class="section-title">
+                <div class="section-icon">⚙️</div>
+                <h2>لوحة تحكم المدير</h2>
+            </div>
+            <p>لوحة إدارة شاملة للتحكم الكامل في المنصة، المنتجات، الطلبات، المستخدمين، والإعدادات.</p>
+            
+            <!-- Admin Dashboard Mockup -->
+            <div class="admin-mockup">
+                <div class="admin-header">
+                    <h3>⚙️ قفيفات - لوحة الإدارة</h3>
+                    <span>admin@qfifat.store</span>
+                </div>
+                <div class="admin-body">
+                    <div class="admin-sidebar">
+                        <div class="admin-sidebar-item active">📊 لوحة التحكم</div>
+                        <div class="admin-sidebar-item">📈 الإحصائيات</div>
+                        <div class="admin-sidebar-item">📦 المنتجات</div>
+                        <div class="admin-sidebar-item">📂 الفئات</div>
+                        <div class="admin-sidebar-item">🛒 الطلبات</div>
+                        <div class="admin-sidebar-item">💳 المدفوعات</div>
+                        <div class="admin-sidebar-item">📄 الفواتير</div>
+                        <div class="admin-sidebar-item">⭐ التقييمات</div>
+                        <div class="admin-sidebar-item">🎟️ الكوبونات</div>
+                        <div class="admin-sidebar-item">🏪 طلبات البائعين</div>
+                        <div class="admin-sidebar-item">👥 المستخدمين</div>
+                        <div class="admin-sidebar-item">⚙️ الإعدادات</div>
+                    </div>
+                    <div class="admin-content">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="number">156</div>
+                                <div class="label">إجمالي المنتجات</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="number">1,245</div>
+                                <div class="label">إجمالي الطلبات</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="number">23</div>
+                                <div class="label">طلبات قيد الانتظار</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="number">8</div>
+                                <div class="label">مدفوعات تنتظر التحقق</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin: 24px 0 16px; font-weight: 700;">جميع أقسام لوحة الإدارة:</h3>
+            <div class="tabs-list">
+                <div class="tab-item highlighted">📊 لوحة التحكم</div>
+                <div class="tab-item">📈 الإحصائيات</div>
+                <div class="tab-item">📦 المنتجات</div>
+                <div class="tab-item">📂 الفئات</div>
+                <div class="tab-item">🛒 الطلبات</div>
+                <div class="tab-item">💳 المدفوعات</div>
+                <div class="tab-item">📄 الفواتير</div>
+                <div class="tab-item">⭐ التقييمات</div>
+                <div class="tab-item">🎟️ الكوبونات</div>
+                <div class="tab-item">🏪 طلبات البائعين</div>
+                <div class="tab-item">👥 المستخدمين</div>
+                <div class="tab-item">⚙️ الإعدادات</div>
+            </div>
+
+            <!-- Detailed Admin Sections -->
+            <div style="margin-top: 32px;">
+                <h3 style="font-weight: 700; margin-bottom: 16px;">📊 قسم لوحة التحكم الرئيسية</h3>
+                <p style="color: var(--text-muted); margin-bottom: 16px;">نظرة عامة سريعة على حالة المتجر مع إحصائيات فورية وإجراءات سريعة.</p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">📦</div>
+                        <h4>إضافة منتج</h4>
+                        <p>إضافة منتج جديد بسرعة</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">✅</div>
+                        <h4>تأكيد المدفوعات</h4>
+                        <p>مراجعة وتأكيد المدفوعات</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">🏪</div>
+                        <h4>طلبات البائعين</h4>
+                        <p>قبول أو رفض طلبات البائعين</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">⚙️</div>
+                        <h4>إعدادات الدفع</h4>
+                        <p>تهيئة طرق الدفع</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 32px;">
+                <h3 style="font-weight: 700; margin-bottom: 16px;">📈 قسم الإحصائيات</h3>
+                <p style="color: var(--text-muted); margin-bottom: 16px;">رسوم بيانية متقدمة لمتابعة أداء المبيعات والإيرادات على مدار الوقت.</p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">📊</div>
+                        <h4>مخططات المبيعات</h4>
+                        <p>رسوم بيانية للمبيعات اليومية والشهرية</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">💵</div>
+                        <h4>الإيرادات</h4>
+                        <p>تتبع الإيرادات والأرباح</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 32px;">
+                <h3 style="font-weight: 700; margin-bottom: 16px;">📦 قسم المنتجات</h3>
+                <p style="color: var(--text-muted); margin-bottom: 16px;">إدارة كاملة لجميع منتجات المتجر مع إمكانية الإضافة والتعديل والحذف.</p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">➕</div>
+                        <h4>إضافة منتج</h4>
+                        <p>نموذج شامل لإضافة منتج جديد</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">✏️</div>
+                        <h4>تعديل المنتج</h4>
+                        <p>تحديث بيانات وصور المنتج</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">🔄</div>
+                        <h4>تفعيل/تعطيل</h4>
+                        <p>التحكم في ظهور المنتج</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">🗑️</div>
+                        <h4>حذف المنتج</h4>
+                        <p>إزالة المنتجات من المتجر</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 32px;">
+                <h3 style="font-weight: 700; margin-bottom: 16px;">📂 قسم الفئات</h3>
+                <p style="color: var(--text-muted); margin-bottom: 16px;">إدارة فئات المنتجات وتنظيمها بشكل هرمي.</p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">📁</div>
+                        <h4>إضافة فئة</h4>
+                        <p>إنشاء فئات جديدة</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">🖼️</div>
+                        <h4>صورة وأيقونة</h4>
+                        <p>تخصيص مظهر الفئة</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 32px;">
+                <h3 style="font-weight: 700; margin-bottom: 16px;">🛒 قسم الطلبات</h3>
+                <p style="color: var(--text-muted); margin-bottom: 16px;">متابعة وإدارة جميع طلبات العملاء مع تحديث حالتها.</p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">📋</div>
+                        <h4>قائمة الطلبات</h4>
+                        <p>عرض جميع الطلبات</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">🔄</div>
+                        <h4>تحديث الحالة</h4>
+                        <p>تغيير حالة الطلب</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">🚚</div>
+                        <h4>رقم التتبع</h4>
+                        <p>إضافة معلومات الشحن</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">👁️</div>
+                        <h4>تفاصيل الطلب</h4>
+                        <p>عرض كامل تفاصيل الطلب</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 32px;">
+                <h3 style="font-weight: 700; margin-bottom: 16px;">💳 قسم المدفوعات</h3>
+                <p style="color: var(--text-muted); margin-bottom: 16px;">مراجعة وتأكيد جميع عمليات الدفع خاصة مدفوعات بريد (CCP).</p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">📄</div>
+                        <h4>إثباتات الدفع</h4>
+                        <p>عرض صور إثبات الدفع</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">✅</div>
+                        <h4>تأكيد الدفع</h4>
+                        <p>الموافقة على المدفوعات</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">❌</div>
+                        <h4>رفض الدفع</h4>
+                        <p>رفض المدفوعات غير الصحيحة</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">📝</div>
+                        <h4>ملاحظات</h4>
+                        <p>إضافة ملاحظات للدفع</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 32px;">
+                <h3 style="font-weight: 700; margin-bottom: 16px;">⭐ قسم التقييمات</h3>
+                <p style="color: var(--text-muted); margin-bottom: 16px;">مراجعة والموافقة على تقييمات العملاء قبل نشرها.</p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">👁️</div>
+                        <h4>مراجعة التقييمات</h4>
+                        <p>عرض التقييمات الجديدة</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">✅</div>
+                        <h4>الموافقة</h4>
+                        <p>نشر التقييمات المقبولة</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 32px;">
+                <h3 style="font-weight: 700; margin-bottom: 16px;">🎟️ قسم الكوبونات</h3>
+                <p style="color: var(--text-muted); margin-bottom: 16px;">إنشاء وإدارة كوبونات الخصم للعملاء.</p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">➕</div>
+                        <h4>إنشاء كوبون</h4>
+                        <p>كوبون خصم نسبي أو ثابت</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">📊</div>
+                        <h4>تتبع الاستخدام</h4>
+                        <p>عدد مرات استخدام الكوبون</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 32px;">
+                <h3 style="font-weight: 700; margin-bottom: 16px;">🏪 قسم طلبات البائعين</h3>
+                <p style="color: var(--text-muted); margin-bottom: 16px;">مراجعة طلبات الانضمام كبائعين والموافقة عليها أو رفضها.</p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">📋</div>
+                        <h4>طلبات جديدة</h4>
+                        <p>عرض الطلبات المعلقة</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">✅</div>
+                        <h4>قبول البائع</h4>
+                        <p>الموافقة على الطلب</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">❌</div>
+                        <h4>رفض الطلب</h4>
+                        <p>رفض مع إضافة سبب</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">👁️</div>
+                        <h4>تفاصيل البائع</h4>
+                        <p>معلومات النشاط التجاري</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 32px;">
+                <h3 style="font-weight: 700; margin-bottom: 16px;">👥 قسم المستخدمين</h3>
+                <p style="color: var(--text-muted); margin-bottom: 16px;">إدارة حسابات المستخدمين وصلاحياتهم.</p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">📋</div>
+                        <h4>قائمة المستخدمين</h4>
+                        <p>عرض جميع المستخدمين</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">🔑</div>
+                        <h4>الصلاحيات</h4>
+                        <p>تعيين أدوار المستخدمين</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 32px;">
+                <h3 style="font-weight: 700; margin-bottom: 16px;">⚙️ قسم الإعدادات</h3>
+                <p style="color: var(--text-muted); margin-bottom: 16px;">تهيئة إعدادات الدفع خاصة معلومات حساب بريد (CCP).</p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">💳</div>
+                        <h4>إعدادات بريد</h4>
+                        <p>رقم CCP والمفتاح</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="icon">📝</div>
+                        <h4>تعليمات الدفع</h4>
+                        <p>تخصيص رسالة للعملاء</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <h3>شكراً لاستخدامك منصة قفيفات</h3>
+        <p>للقفف والمنتجات الحرفية الجزائرية الأصيلة</p>
+        <div class="company">
+            <strong>EURL B Premier</strong>
+            <p style="margin-top: 8px; opacity: 0.8;">جميع الحقوق محفوظة © 2025</p>
+        </div>
+    </footer>
+
+    <!-- Print Button -->
+    <button class="print-btn" onclick="window.print()">
+        🖨️ طباعة الدليل
+    </button>
+</body>
+</html>
