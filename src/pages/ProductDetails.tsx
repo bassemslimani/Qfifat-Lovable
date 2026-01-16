@@ -5,10 +5,10 @@ import { ArrowRight, Heart, ShoppingCart, Star, Minus, Plus, Share2, Truck, Shie
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
+import { ProductReviews } from "@/components/product/ProductReviews";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/context/CartContext";
 import { toast } from "@/hooks/use-toast";
-
 interface Product {
   id: string;
   name: string;
@@ -254,6 +254,9 @@ export default function ProductDetails() {
               <span className="text-xs text-muted-foreground">إرجاع مجاني</span>
             </div>
           </div>
+
+          {/* Reviews Section */}
+          <ProductReviews productId={product.id} />
         </motion.div>
       </main>
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, CreditCard, Building2, Upload, CheckCircle, Loader2 } from "lucide-react";
+import { ArrowLeft, CreditCard, Building2, Upload, CheckCircle, Loader2, Ticket, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +11,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
+interface Coupon {
+  id: string;
+  code: string;
+  discount_type: "percentage" | "fixed";
+  discount_value: number;
+  min_order_amount: number;
+}
 type PaymentMethod = "barid" | "stripe";
 
 const wilayas = [
@@ -34,6 +41,12 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   
+  // Coupon state
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [discount, setDiscount] = useState(0);
+  
   const [shippingInfo, setShippingInfo] = useState({
     name: "",
     phone: "",
@@ -49,6 +62,95 @@ export default function Checkout() {
   });
 
   const shippingCost = 500; // Fixed shipping cost
+  const finalTotal = total - discount + shippingCost;
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    
+    setCouponLoading(true);
+    try {
+      const { data: coupon, error } = await supabase
+        .from("coupons")
+        .select("*")
+        .eq("code", couponCode.toUpperCase())
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (!coupon) {
+        toast({
+          title: "كوبون غير صالح",
+          description: "لم يتم العثور على هذا الكوبون",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Check expiration
+      if (coupon.expires_at && new Date(coupon.expires_at) < new Date()) {
+        toast({
+          title: "كوبون منتهي الصلاحية",
+          description: "انتهت صلاحية هذا الكوبون",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Check min order amount
+      if (coupon.min_order_amount && total < coupon.min_order_amount) {
+        toast({
+          title: "الحد الأدنى للطلب",
+          description: `الحد الأدنى للطلب هو ${coupon.min_order_amount} دج`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Check max uses
+      if (coupon.max_uses && coupon.used_count >= coupon.max_uses) {
+        toast({
+          title: "الكوبون مستنفد",
+          description: "تم استخدام هذا الكوبون الحد الأقصى من المرات",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Calculate discount
+      const discountAmount = coupon.discount_type === "percentage"
+        ? Math.round((total * coupon.discount_value) / 100)
+        : Math.min(coupon.discount_value, total);
+
+      setAppliedCoupon({
+        id: coupon.id,
+        code: coupon.code,
+        discount_type: coupon.discount_type as "percentage" | "fixed",
+        discount_value: coupon.discount_value,
+        min_order_amount: coupon.min_order_amount,
+      });
+      setDiscount(discountAmount);
+      
+      toast({
+        title: "تم تطبيق الكوبون!",
+        description: `وفرت ${discountAmount.toLocaleString()} دج`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "خطأ",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setDiscount(0);
+    setCouponCode("");
+  };
 
   const handleShippingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,7 +190,7 @@ export default function Checkout() {
           order_number: `QF-${Date.now()}`,
           subtotal: total,
           shipping_cost: shippingCost,
-          total: total + shippingCost,
+          total: finalTotal,
           shipping_name: shippingInfo.name,
           shipping_phone: shippingInfo.phone,
           shipping_address: shippingInfo.address,
@@ -123,13 +225,29 @@ export default function Checkout() {
         .insert({
           order_id: order.id,
           method: paymentMethod,
-          amount: total + shippingCost,
+          amount: finalTotal,
           status: paymentMethod === "stripe" ? "verified" : "pending",
         })
         .select()
         .single();
 
       if (paymentError) throw paymentError;
+
+      // Track coupon usage
+      if (appliedCoupon && user) {
+        await supabase.from("coupon_uses").insert({
+          coupon_id: appliedCoupon.id,
+          user_id: user.id,
+          order_id: order.id,
+          discount_amount: discount,
+        });
+
+        // Update coupon used_count
+        await supabase
+          .from("coupons")
+          .update({ used_count: (appliedCoupon as any).used_count + 1 })
+          .eq("id", appliedCoupon.id);
+      }
 
       // Upload payment proof for Barid
       if (paymentMethod === "barid" && uploadedFile) {
@@ -374,6 +492,53 @@ export default function Checkout() {
               </div>
             )}
 
+            {/* Coupon Section */}
+            <div className="bg-card rounded-2xl p-4 shadow-card">
+              <h3 className="font-bold text-foreground mb-3 flex items-center gap-2">
+                <Ticket className="h-5 w-5 text-primary" />
+                كوبون الخصم
+              </h3>
+              {appliedCoupon ? (
+                <div className="flex items-center justify-between bg-primary/10 p-3 rounded-xl">
+                  <div>
+                    <span className="font-bold text-primary">{appliedCoupon.code}</span>
+                    <span className="text-sm text-muted-foreground mr-2">
+                      (-{discount.toLocaleString()} دج)
+                    </span>
+                  </div>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={removeCoupon}
+                    className="h-8 w-8"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="أدخل كود الكوبون"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                    className="font-mono"
+                    dir="ltr"
+                  />
+                  <Button
+                    onClick={handleApplyCoupon}
+                    disabled={couponLoading || !couponCode.trim()}
+                    variant="outline"
+                  >
+                    {couponLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      "تطبيق"
+                    )}
+                  </Button>
+                </div>
+              )}
+            </div>
+
             {/* Order Summary */}
             <div className="bg-card rounded-2xl p-4 shadow-card">
               <h3 className="font-bold text-foreground mb-3">ملخص الطلب</h3>
@@ -382,13 +547,19 @@ export default function Checkout() {
                   <span className="text-muted-foreground">المنتجات ({items.length})</span>
                   <span>{total.toLocaleString()} دج</span>
                 </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-primary">
+                    <span>الخصم</span>
+                    <span>-{discount.toLocaleString()} دج</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">التوصيل</span>
                   <span>{shippingCost.toLocaleString()} دج</span>
                 </div>
                 <div className="border-t border-border pt-2 flex justify-between font-bold text-lg">
                   <span>الإجمالي</span>
-                  <span className="text-primary">{(total + shippingCost).toLocaleString()} دج</span>
+                  <span className="text-primary">{finalTotal.toLocaleString()} دج</span>
                 </div>
               </div>
             </div>
