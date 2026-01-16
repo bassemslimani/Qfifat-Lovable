@@ -24,8 +24,10 @@ import Favorites from "./pages/Favorites";
 import CategoryProducts from "./pages/CategoryProducts";
 import MyAddresses from "./pages/MyAddresses";
 import MyNotifications from "./pages/MyNotifications";
+import Offline from "./pages/Offline";
 import NotFound from "./pages/NotFound";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
+import { OfflineDetector } from "@/components/pwa/OfflineDetector";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +39,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <OfflineDetector />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
@@ -58,6 +61,7 @@ const App = () => (
               <Route path="/install" element={<Install />} />
               <Route path="/invoice/:id" element={<Invoice />} />
               <Route path="/favorites" element={<Favorites />} />
+              <Route path="/offline" element={<Offline />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
