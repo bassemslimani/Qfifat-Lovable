@@ -11,6 +11,7 @@ interface ProductImageSliderProps {
   isFavorite: boolean;
   onToggleFavorite: () => void;
   isToggling: boolean;
+  onShare?: () => void;
 }
 
 export function ProductImageSlider({
@@ -21,6 +22,7 @@ export function ProductImageSlider({
   isFavorite,
   onToggleFavorite,
   isToggling,
+  onShare,
 }: ProductImageSliderProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, direction: "rtl" });
@@ -126,9 +128,14 @@ export function ProductImageSlider({
           >
             <Heart className={`h-5 w-5 ${isFavorite ? "fill-current" : ""}`} />
           </button>
-          <button className="w-10 h-10 rounded-full bg-card flex items-center justify-center shadow-md text-muted-foreground">
-            <Share2 className="h-5 w-5" />
-          </button>
+          {onShare && (
+            <button 
+              onClick={onShare}
+              className="w-10 h-10 rounded-full bg-card flex items-center justify-center shadow-md text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Share2 className="h-5 w-5" />
+            </button>
+          )}
         </div>
 
         {/* Dots Indicator */}
