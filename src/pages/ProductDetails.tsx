@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { ArrowRight, Heart, ShoppingCart, Star, Minus, Plus, Share2, Truck, Shield, RefreshCw } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Heart, ShoppingCart, Star, Minus, Plus, Share2, Truck, Shield, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { ProductReviews } from "@/components/product/ProductReviews";
+import { ProductImageSlider } from "@/components/product/ProductImageSlider";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/context/CartContext";
 import { useFavorites } from "@/hooks/useFavorites";
@@ -34,7 +35,6 @@ export default function ProductDetails() {
   
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
@@ -117,67 +117,16 @@ export default function ProductDetails() {
       </div>
 
       <main className="container">
-        {/* Image Gallery */}
-        <div className="mb-6">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="relative aspect-square rounded-2xl overflow-hidden bg-secondary"
-          >
-            <img
-              src={allImages[selectedImage] || "/placeholder.svg"}
-              alt={product.name}
-              className="w-full h-full object-cover"
-            />
-            
-            {/* Badges */}
-            <div className="absolute top-4 right-4 flex flex-col gap-2">
-              {discount && (
-                <span className="bg-accent text-accent-foreground text-sm font-bold px-3 py-1 rounded-lg">
-                  -{discount}%
-                </span>
-              )}
-              {!product.in_stock && (
-                <span className="bg-muted text-muted-foreground text-sm font-medium px-3 py-1 rounded-lg">
-                  نفذ المخزون
-                </span>
-              )}
-            </div>
-
-            {/* Actions */}
-            <div className="absolute top-4 left-4 flex gap-2">
-              <button
-                onClick={() => product && toggleFavorite(product.id)}
-                disabled={isToggling}
-                className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-colors ${
-                  product && isFavorite(product.id) ? "bg-red-500 text-white" : "bg-card text-muted-foreground"
-                }`}
-              >
-                <Heart className={`h-5 w-5 ${product && isFavorite(product.id) ? "fill-current" : ""}`} />
-              </button>
-              <button className="w-10 h-10 rounded-full bg-card flex items-center justify-center shadow-md text-muted-foreground">
-                <Share2 className="h-5 w-5" />
-              </button>
-            </div>
-          </motion.div>
-
-          {/* Thumbnail Gallery */}
-          {allImages.length > 1 && (
-            <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
-              {allImages.map((img, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedImage(index)}
-                  className={`flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 ${
-                    selectedImage === index ? "border-primary" : "border-transparent"
-                  }`}
-                >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        {/* Image Gallery with Slider */}
+        <ProductImageSlider 
+          images={allImages} 
+          productName={product.name}
+          discount={discount}
+          inStock={product.in_stock}
+          isFavorite={isFavorite(product.id)}
+          onToggleFavorite={() => toggleFavorite(product.id)}
+          isToggling={isToggling}
+        />
 
         {/* Product Info */}
         <motion.div
