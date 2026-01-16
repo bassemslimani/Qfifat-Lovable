@@ -22,6 +22,9 @@ import {
   Store,
   Grid3X3,
   FileText,
+  Star,
+  Ticket,
+  BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -31,6 +34,9 @@ import { ProductForm } from "@/components/admin/ProductForm";
 import { UsersManagement } from "@/components/admin/UsersManagement";
 import { CategoriesManagement } from "@/components/admin/CategoriesManagement";
 import { InvoicesManagement } from "@/components/admin/InvoicesManagement";
+import { ReviewsManagement } from "@/components/admin/ReviewsManagement";
+import { CouponsManagement } from "@/components/admin/CouponsManagement";
+import { AdminStats } from "@/components/admin/AdminStats";
 import logo from "@/assets/logo.png";
 
 interface Stats {
@@ -88,11 +94,14 @@ export default function AdminDashboard() {
 
   const menuItems = [
     { id: "dashboard", label: "لوحة التحكم", icon: LayoutDashboard },
+    { id: "stats", label: "الإحصائيات", icon: BarChart3 },
     { id: "products", label: "المنتجات", icon: Package },
     { id: "categories", label: "الفئات", icon: Grid3X3 },
     { id: "orders", label: "الطلبات", icon: ShoppingCart },
     { id: "payments", label: "المدفوعات", icon: CreditCard },
     { id: "invoices", label: "الفواتير", icon: FileText },
+    { id: "reviews", label: "التقييمات", icon: Star },
+    { id: "coupons", label: "الكوبونات", icon: Ticket },
     { id: "merchants", label: "طلبات البائعين", icon: Store },
     { id: "users", label: "المستخدمين", icon: Users },
     { id: "settings", label: "الإعدادات", icon: Settings },
@@ -325,9 +334,13 @@ export default function AdminDashboard() {
             <UsersManagement />
           )}
 
-          {activeTab === "invoices" && (
-            <InvoicesManagement />
-          )}
+          {activeTab === "invoices" && <InvoicesManagement />}
+
+          {activeTab === "stats" && <AdminStats />}
+
+          {activeTab === "reviews" && <ReviewsManagement />}
+
+          {activeTab === "coupons" && <CouponsManagement />}
 
           {activeTab === "settings" && (
             <AdminSettings />
