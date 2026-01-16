@@ -146,38 +146,38 @@ export default function MyNotifications() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20" dir="rtl">
+    <div className="min-h-screen bg-background pt-14 pb-20" dir="rtl">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b">
-        <div className="container py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b pt-safe">
+        <div className="container py-3">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-3 min-w-0">
               <button
                 onClick={() => navigate(-1)}
-                className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center"
+                className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0"
               >
                 <ArrowRight className="h-5 w-5" />
               </button>
-              <div>
-                <h1 className="text-xl font-bold">الإشعارات</h1>
+              <div className="min-w-0">
+                <h1 className="text-lg font-bold truncate">الإشعارات</h1>
                 {unreadCount > 0 && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     {unreadCount} إشعار غير مقروء
                   </p>
                 )}
               </div>
             </div>
             {unreadCount > 0 && (
-              <Button variant="ghost" size="sm" onClick={markAllAsRead}>
+              <Button variant="ghost" size="sm" onClick={markAllAsRead} className="flex-shrink-0">
                 <CheckCheck className="h-4 w-4 ml-1" />
-                قراءة الكل
+                <span className="hidden sm:inline">قراءة الكل</span>
               </Button>
             )}
           </div>
         </div>
       </header>
 
-      <main className="container py-6">
+      <main className="container py-6 pt-safe">
         {/* Filter Tabs */}
         <div className="flex bg-secondary rounded-xl p-1 mb-6">
           <button

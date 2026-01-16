@@ -263,9 +263,9 @@ export default function AccountSettings() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-14">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-card/95 backdrop-blur border-b border-border px-4 py-3">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur border-b border-border px-4 py-3 pt-safe">
         <div className="flex items-center gap-4">
           <button onClick={() => navigate(-1)} className="text-foreground">
             <ArrowRight className="h-6 w-6" />
@@ -274,7 +274,7 @@ export default function AccountSettings() {
         </div>
       </header>
 
-      <main className="container py-6 pb-24">
+      <main className="container py-6 pt-safe pb-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

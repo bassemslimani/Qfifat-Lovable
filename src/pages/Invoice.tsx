@@ -103,13 +103,13 @@ export default function Invoice() {
   }
 
   return (
-    <div className="min-h-screen bg-background print:bg-white">
+    <div className="min-h-screen bg-background pt-14 print:pt-0 print:bg-white">
       <div className="print:hidden">
         <Header />
       </div>
       
       {/* Actions - Hidden in print */}
-      <div className="container py-4 print:hidden">
+      <div className="container py-4 pt-safe print:hidden">
         <div className="flex items-center justify-between">
           <button 
             onClick={() => navigate(-1)}

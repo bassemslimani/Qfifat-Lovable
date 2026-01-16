@@ -68,28 +68,28 @@ export default function CategoryProducts() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20" dir="rtl">
+    <div className="min-h-screen bg-background pt-14 pb-20" dir="rtl">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b">
-        <div className="container py-4">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b pt-safe">
+        <div className="container py-3">
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate(-1)}
-              className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center"
+              className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center flex-shrink-0"
             >
               <ArrowRight className="h-5 w-5" />
             </button>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 min-w-0">
               {category?.icon && (
-                <span className="text-2xl">{category.icon}</span>
+                <span className="text-2xl flex-shrink-0">{category.icon}</span>
               )}
-              <h1 className="text-xl font-bold">{category?.name || "جاري التحميل..."}</h1>
+              <h1 className="text-lg font-bold truncate">{category?.name || "جاري التحميل..."}</h1>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="container py-6">
+      <main className="container py-6 pt-safe">
         {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {[1, 2, 3, 4, 5, 6].map((i) => (

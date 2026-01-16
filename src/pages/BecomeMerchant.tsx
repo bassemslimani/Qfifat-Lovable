@@ -186,10 +186,10 @@ export default function BecomeMerchant() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pt-14 pb-20">
       <Header />
       
-      <main className="container py-6">
+      <main className="container py-6 pt-safe">
         {/* Hero */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
