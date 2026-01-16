@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import logo from "@/assets/logo.png";
+import logo from "@/assets/logo-white.png";
 
 type AuthMode = "login" | "register" | "forgot";
 
