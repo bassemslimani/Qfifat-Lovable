@@ -48,36 +48,49 @@ export function NotificationBell() {
         {isOpen && (
           <>
             {/* Backdrop */}
-            <div
-              className="fixed inset-0 z-40"
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-[100]"
               onClick={() => setIsOpen(false)}
             />
 
-            {/* Dropdown */}
+            {/* Dropdown - Centered on mobile, positioned on desktop */}
             <motion.div
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.95 }}
-              className="absolute left-0 top-full mt-2 w-80 max-h-[70vh] bg-card rounded-2xl shadow-elevated border border-border z-50 overflow-hidden"
+              exit={{ opacity: 0, y: 20, scale: 0.95 }}
+              className="fixed left-4 right-4 top-1/2 -translate-y-1/2 sm:absolute sm:left-0 sm:right-auto sm:top-full sm:translate-y-0 sm:mt-2 w-auto sm:w-80 max-h-[70vh] bg-card rounded-2xl shadow-elevated border border-border z-[101] overflow-hidden"
             >
               {/* Header */}
               <div className="sticky top-0 bg-card border-b border-border p-4 flex items-center justify-between">
                 <h3 className="font-bold text-foreground">الإشعارات</h3>
-                {unreadCount > 0 && (
+                <div className="flex items-center gap-2">
+                  {unreadCount > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={markAllAsRead}
+                      className="text-xs"
+                    >
+                      <CheckCheck className="h-4 w-4 ml-1" />
+                      قراءة الكل
+                    </Button>
+                  )}
                   <Button
                     variant="ghost"
-                    size="sm"
-                    onClick={markAllAsRead}
-                    className="text-xs"
+                    size="icon"
+                    className="sm:hidden h-8 w-8"
+                    onClick={() => setIsOpen(false)}
                   >
-                    <CheckCheck className="h-4 w-4 ml-1" />
-                    قراءة الكل
+                    <X className="h-4 w-4" />
                   </Button>
-                )}
+                </div>
               </div>
 
               {/* Notifications List */}
-              <div className="overflow-y-auto max-h-96">
+              <div className="overflow-y-auto max-h-[50vh] sm:max-h-96">
                 {loading ? (
                   <div className="p-8 text-center text-muted-foreground">
                     جاري التحميل...
