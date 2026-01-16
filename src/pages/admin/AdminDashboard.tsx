@@ -36,6 +36,7 @@ import { CategoriesManagement } from "@/components/admin/CategoriesManagement";
 import { InvoicesManagement } from "@/components/admin/InvoicesManagement";
 import { ReviewsManagement } from "@/components/admin/ReviewsManagement";
 import { CouponsManagement } from "@/components/admin/CouponsManagement";
+import { PaymentsManagement } from "@/components/admin/PaymentsManagement";
 import { AdminStats } from "@/components/admin/AdminStats";
 import logo from "@/assets/logo.png";
 
@@ -319,7 +320,7 @@ export default function AdminDashboard() {
           )}
 
           {activeTab === "payments" && (
-            <AdminPayments />
+            <PaymentsManagement />
           )}
 
           {activeTab === "merchants" && (
