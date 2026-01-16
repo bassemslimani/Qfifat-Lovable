@@ -93,6 +93,22 @@ export default function Account() {
       <Header />
 
       <main className="container py-6">
+        {/* Logout Button - Prominent */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-4"
+        >
+          <Button
+            variant="destructive"
+            className="w-full"
+            onClick={handleLogout}
+          >
+            <LogOut className="h-5 w-5 ml-2" />
+            تسجيل الخروج
+          </Button>
+        </motion.div>
+
         {/* Profile Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

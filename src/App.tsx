@@ -11,6 +11,7 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import ProductDetails from "./pages/ProductDetails";
 import Products from "./pages/Products";
+import Categories from "./pages/Categories";
 import Account from "./pages/Account";
 import AccountSettings from "./pages/AccountSettings";
 import BecomeMerchant from "./pages/BecomeMerchant";
@@ -40,6 +41,7 @@ const App = () => (
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/product/:id" element={<ProductDetails />} />
               <Route path="/products" element={<Products />} />
+              <Route path="/categories" element={<Categories />} />
               <Route path="/account" element={<Account />} />
               <Route path="/account/settings" element={<AccountSettings />} />
               <Route path="/become-merchant" element={<BecomeMerchant />} />
