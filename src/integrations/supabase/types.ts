@@ -371,11 +371,16 @@ export type Database = {
       orders: {
         Row: {
           created_at: string
+          current_location: string | null
           customer_id: string
+          estimated_delivery: string | null
           id: string
+          latitude: number | null
+          longitude: number | null
           notes: string | null
           order_number: string
           shipping_address: string
+          shipping_carrier: string | null
           shipping_city: string
           shipping_cost: number | null
           shipping_name: string
@@ -384,15 +389,21 @@ export type Database = {
           status: Database["public"]["Enums"]["order_status"] | null
           subtotal: number
           total: number
+          tracking_number: string | null
           updated_at: string
         }
         Insert: {
           created_at?: string
+          current_location?: string | null
           customer_id: string
+          estimated_delivery?: string | null
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           notes?: string | null
           order_number: string
           shipping_address: string
+          shipping_carrier?: string | null
           shipping_city: string
           shipping_cost?: number | null
           shipping_name: string
@@ -401,15 +412,21 @@ export type Database = {
           status?: Database["public"]["Enums"]["order_status"] | null
           subtotal: number
           total: number
+          tracking_number?: string | null
           updated_at?: string
         }
         Update: {
           created_at?: string
+          current_location?: string | null
           customer_id?: string
+          estimated_delivery?: string | null
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           notes?: string | null
           order_number?: string
           shipping_address?: string
+          shipping_carrier?: string | null
           shipping_city?: string
           shipping_cost?: number | null
           shipping_name?: string
@@ -418,6 +435,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["order_status"] | null
           subtotal?: number
           total?: number
+          tracking_number?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -613,6 +631,47 @@ export type Database = {
           wilaya?: string | null
         }
         Relationships: []
+      }
+      shipping_tracking: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          latitude: number | null
+          location: string | null
+          longitude: number | null
+          order_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          latitude?: number | null
+          location?: string | null
+          longitude?: number | null
+          order_id: string
+          status: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          latitude?: number | null
+          location?: string | null
+          longitude?: number | null
+          order_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipping_tracking_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {

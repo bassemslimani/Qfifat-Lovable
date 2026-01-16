@@ -23,6 +23,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { ProductForm } from "@/components/admin/ProductForm";
+import { MerchantOrders } from "@/components/merchant/MerchantOrders";
+import { MerchantEarnings } from "@/components/merchant/MerchantEarnings";
 import logo from "@/assets/logo.png";
 
 interface Stats {
@@ -485,26 +487,12 @@ export default function MerchantDashboard() {
 
           {/* Orders Tab */}
           {activeTab === "orders" && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-card rounded-2xl p-8 text-center shadow-card"
-            >
-              <ShoppingCart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">لا توجد طلبات بعد</p>
-            </motion.div>
+            <MerchantOrders />
           )}
 
           {/* Earnings Tab */}
           {activeTab === "earnings" && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-card rounded-2xl p-8 text-center shadow-card"
-            >
-              <CreditCard className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">لا توجد أرباح بعد</p>
-            </motion.div>
+            <MerchantEarnings />
           )}
         </div>
       </main>
