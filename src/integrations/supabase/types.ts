@@ -126,6 +126,119 @@ export type Database = {
           },
         ]
       }
+      invoices: {
+        Row: {
+          created_at: string
+          customer_address: string | null
+          customer_email: string | null
+          customer_name: string
+          customer_phone: string | null
+          id: string
+          invoice_number: string
+          issued_at: string
+          order_id: string
+          paid_at: string | null
+          shipping_cost: number | null
+          status: string | null
+          subtotal: number
+          total: number
+        }
+        Insert: {
+          created_at?: string
+          customer_address?: string | null
+          customer_email?: string | null
+          customer_name: string
+          customer_phone?: string | null
+          id?: string
+          invoice_number: string
+          issued_at?: string
+          order_id: string
+          paid_at?: string | null
+          shipping_cost?: number | null
+          status?: string | null
+          subtotal: number
+          total: number
+        }
+        Update: {
+          created_at?: string
+          customer_address?: string | null
+          customer_email?: string | null
+          customer_name?: string
+          customer_phone?: string | null
+          id?: string
+          invoice_number?: string
+          issued_at?: string
+          order_id?: string
+          paid_at?: string | null
+          shipping_cost?: number | null
+          status?: string | null
+          subtotal?: number
+          total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      merchant_earnings: {
+        Row: {
+          amount: number
+          commission_amount: number
+          commission_rate: number | null
+          created_at: string
+          id: string
+          merchant_id: string
+          net_amount: number
+          order_id: string | null
+          order_item_id: string | null
+          status: string | null
+        }
+        Insert: {
+          amount: number
+          commission_amount: number
+          commission_rate?: number | null
+          created_at?: string
+          id?: string
+          merchant_id: string
+          net_amount: number
+          order_id?: string | null
+          order_item_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          amount?: number
+          commission_amount?: number
+          commission_rate?: number | null
+          created_at?: string
+          id?: string
+          merchant_id?: string
+          net_amount?: number
+          order_id?: string | null
+          order_item_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "merchant_earnings_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "merchant_earnings_order_item_id_fkey"
+            columns: ["order_item_id"]
+            isOneToOne: false
+            referencedRelation: "order_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       merchant_requests: {
         Row: {
           admin_notes: string | null
@@ -168,6 +281,39 @@ export type Database = {
           updated_at?: string
           user_id?: string
           wilaya?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          data: Json | null
+          id: string
+          is_read: boolean | null
+          message: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          title?: string
+          type?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -375,6 +521,7 @@ export type Database = {
           in_stock: boolean | null
           is_active: boolean | null
           is_featured: boolean | null
+          merchant_id: string | null
           name: string
           original_price: number | null
           price: number
@@ -393,6 +540,7 @@ export type Database = {
           in_stock?: boolean | null
           is_active?: boolean | null
           is_featured?: boolean | null
+          merchant_id?: string | null
           name: string
           original_price?: number | null
           price: number
@@ -411,6 +559,7 @@ export type Database = {
           in_stock?: boolean | null
           is_active?: boolean | null
           is_featured?: boolean | null
+          merchant_id?: string | null
           name?: string
           original_price?: number | null
           price?: number
@@ -486,6 +635,45 @@ export type Database = {
           role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      withdrawal_requests: {
+        Row: {
+          admin_notes: string | null
+          amount: number
+          created_at: string
+          id: string
+          merchant_id: string
+          payment_details: Json
+          payment_method: string
+          processed_at: string | null
+          processed_by: string | null
+          status: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount: number
+          created_at?: string
+          id?: string
+          merchant_id: string
+          payment_details: Json
+          payment_method: string
+          processed_at?: string | null
+          processed_by?: string | null
+          status?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          amount?: number
+          created_at?: string
+          id?: string
+          merchant_id?: string
+          payment_details?: Json
+          payment_method?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          status?: string | null
         }
         Relationships: []
       }
