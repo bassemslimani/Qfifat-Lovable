@@ -17,6 +17,8 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import MerchantDashboard from "./pages/merchant/MerchantDashboard";
 import TrackOrder from "./pages/TrackOrder";
 import Install from "./pages/Install";
+import Invoice from "./pages/Invoice";
+import Favorites from "./pages/Favorites";
 import NotFound from "./pages/NotFound";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 
@@ -44,6 +46,8 @@ const App = () => (
               <Route path="/track" element={<TrackOrder />} />
               <Route path="/track/:orderId" element={<TrackOrder />} />
               <Route path="/install" element={<Install />} />
+              <Route path="/invoice/:id" element={<Invoice />} />
+              <Route path="/favorites" element={<Favorites />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
