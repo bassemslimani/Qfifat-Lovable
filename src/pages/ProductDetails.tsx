@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Heart, ShoppingCart, Star, Minus, Plus, Share2, Truck, Shield, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowRight, ShoppingCart, Star, Minus, Plus, Share2, Truck, Shield, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
@@ -75,6 +75,32 @@ export default function ProductDetails() {
     }
   };
 
+  const handleShare = async () => {
+    if (!product) return;
+    
+    const shareData = {
+      title: product.name,
+      text: `${product.name} - ${product.price.toLocaleString()} دج`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback: copy link to clipboard
+        await navigator.clipboard.writeText(window.location.href);
+        toast({
+          title: "تم النسخ",
+          description: "تم نسخ رابط المنتج للمشاركة",
+        });
+      }
+    } catch (error) {
+      // User cancelled share or error occurred
+      console.log("Share cancelled or failed:", error);
+    }
+  };
+
   const discount = product?.original_price
     ? Math.round(((product.original_price - product.price) / product.original_price) * 100)
     : null;
@@ -105,8 +131,8 @@ export default function ProductDetails() {
     <div className="min-h-screen bg-background pt-14 pb-32">
       <Header />
       
-      {/* Back Button */}
-      <div className="container py-4 pt-safe">
+      {/* Back Button & Share */}
+      <div className="container py-4 pt-safe flex items-center justify-between">
         <button 
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
@@ -114,6 +140,14 @@ export default function ProductDetails() {
           <ArrowRight className="h-5 w-5" />
           <span>رجوع</span>
         </button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleShare}
+          className="h-10 w-10"
+        >
+          <Share2 className="h-5 w-5" />
+        </Button>
       </div>
 
       <main className="container">
