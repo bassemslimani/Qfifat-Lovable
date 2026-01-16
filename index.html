@@ -2,26 +2,97 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5, user-scalable=yes" />
     <meta name="theme-color" content="#1a7a4c" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="قفيفات" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="قفيفات" />
+    <meta name="msapplication-TileColor" content="#1a7a4c" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="format-detection" content="telephone=no" />
     
     <title>قفيفات | القفيفات الحرفية الجزائرية</title>
     <meta name="description" content="قفيفات - منصة بيع القفيفات الحرفية الجزائرية ومستلزمات التجار. منتجات يدوية فريدة من مادة الحلقة." />
     <meta name="author" content="Qfifat DZ" />
+    <meta name="keywords" content="قفيفات, حرف يدوية, الجزائر, سلال, صناعة تقليدية" />
 
     <meta property="og:title" content="قفيفات | القفيفات الحرفية الجزائرية" />
     <meta property="og:description" content="منصة بيع القفيفات الحرفية الجزائرية ومستلزمات التجار" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:url" content="https://qfifat.store" />
+    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:locale" content="ar_DZ" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@Qfifat" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta name="twitter:image" content="/og-image.png" />
     
+    <!-- PWA Icons -->
     <link rel="icon" type="image/png" href="/favicon.ico" />
-    <link rel="apple-touch-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    
+    <!-- Splash screens for iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    
+    <!-- OneSignal SDK -->
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "YOUR_ONESIGNAL_APP_ID",
+          safari_web_id: "web.onesignal.auto.YOUR_SAFARI_ID",
+          notifyButton: {
+            enable: true,
+            size: 'medium',
+            position: 'bottom-left',
+            text: {
+              'tip.state.unsubscribed': 'اشترك في الإشعارات',
+              'tip.state.subscribed': "أنت مشترك في الإشعارات",
+              'tip.state.blocked': "لقد قمت بحظر الإشعارات",
+              'message.prenotify': 'انقر للاشتراك في الإشعارات',
+              'message.action.subscribed': "شكراً للاشتراك!",
+              'message.action.resubscribed': "أنت مشترك في الإشعارات",
+              'message.action.unsubscribed': "لن تتلقى إشعارات بعد الآن",
+              'dialog.main.title': 'إدارة إشعارات الموقع',
+              'dialog.main.button.subscribe': 'اشتراك',
+              'dialog.main.button.unsubscribe': 'إلغاء الاشتراك',
+              'dialog.blocked.title': 'إلغاء حظر الإشعارات',
+              'dialog.blocked.message': "اتبع هذه التعليمات للسماح بالإشعارات:"
+            }
+          },
+          welcomeNotification: {
+            title: "مرحباً بك في قفيفات!",
+            message: "شكراً لاشتراكك. ستتلقى إشعارات بالعروض الجديدة وتحديثات الطلبات."
+          },
+          promptOptions: {
+            slidedown: {
+              prompts: [
+                {
+                  type: "push",
+                  autoPrompt: true,
+                  text: {
+                    actionMessage: "هل تريد تلقي إشعارات بالعروض الجديدة وتتبع طلباتك؟",
+                    acceptButton: "نعم، اشتراك",
+                    cancelButton: "لا، شكراً"
+                  },
+                  delay: {
+                    pageViews: 2,
+                    timeDelay: 10
+                  }
+                }
+              ]
+            }
+          }
+        });
+      });
+    </script>
   </head>
 
   <body>
