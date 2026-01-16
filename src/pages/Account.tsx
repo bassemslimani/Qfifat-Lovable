@@ -244,7 +244,10 @@ export default function Account() {
               <ChevronLeft className="h-5 w-5 text-muted-foreground" />
             </button>
             
-            <button className="w-full bg-card rounded-2xl p-4 shadow-card flex items-center justify-between">
+            <button 
+              onClick={() => navigate("/account/addresses")}
+              className="w-full bg-card rounded-2xl p-4 shadow-card flex items-center justify-between"
+            >
               <div className="flex items-center gap-3">
                 <MapPin className="h-5 w-5 text-primary" />
                 <span className="font-medium">عناوين التوصيل</span>
@@ -252,7 +255,10 @@ export default function Account() {
               <ChevronLeft className="h-5 w-5 text-muted-foreground" />
             </button>
             
-            <button className="w-full bg-card rounded-2xl p-4 shadow-card flex items-center justify-between">
+            <button 
+              onClick={() => navigate("/account/notifications")}
+              className="w-full bg-card rounded-2xl p-4 shadow-card flex items-center justify-between"
+            >
               <div className="flex items-center gap-3">
                 <Bell className="h-5 w-5 text-primary" />
                 <span className="font-medium">الإشعارات</span>
