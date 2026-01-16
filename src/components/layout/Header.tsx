@@ -1,21 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, ShoppingCart, User, Menu, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Search, ShoppingCart, User, X, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/hooks/useAuth";
 import logo from "@/assets/logo.png";
 
 export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { itemCount } = useCart();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <header className="sticky top-0 z-50 glass-effect border-b border-border/50">
       <div className="container">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center gap-2">
+          <div 
+            className="flex items-center gap-2 cursor-pointer"
+            onClick={() => navigate("/")}
+          >
             <img src={logo} alt="Qfifat" className="h-10 w-10 object-contain" />
             <span className="font-bold text-lg text-primary hidden sm:block">قفيفات</span>
           </div>
@@ -44,12 +51,21 @@ export function Header() {
             </Button>
 
             {/* User */}
-            <Button variant="ghost" size="icon">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => navigate(user ? "/account" : "/auth")}
+            >
               <User className="h-5 w-5" />
             </Button>
 
             {/* Cart */}
-            <Button variant="ghost" size="icon" className="relative">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="relative"
+              onClick={() => navigate("/cart")}
+            >
               <ShoppingCart className="h-5 w-5" />
               {itemCount > 0 && (
                 <motion.span
