@@ -95,30 +95,57 @@ export function Header() {
           </div>
         </div>
 
-        {/* Mobile Search */}
-        <AnimatePresence>
-          {isSearchOpen && (
-            <motion.form
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              onSubmit={handleSearch}
-              className="md:hidden overflow-hidden pb-4"
-            >
-              <div className="relative">
-                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="ابحث عن منتج..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pr-10 bg-secondary/50 border-0"
-                  autoFocus
-                />
-              </div>
-            </motion.form>
-          )}
-        </AnimatePresence>
       </div>
+
+      {/* Mobile Search Overlay */}
+      <AnimatePresence>
+        {isSearchOpen && (
+          <>
+            {/* Backdrop with blur */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-background/60 backdrop-blur-md z-[100]"
+              onClick={() => setIsSearchOpen(false)}
+            />
+            
+            {/* Centered Search Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: -20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: -20 }}
+              className="fixed top-1/3 left-4 right-4 z-[101] md:hidden"
+            >
+              <form onSubmit={handleSearch} className="bg-card rounded-2xl shadow-elevated p-4 border border-border">
+                <div className="relative">
+                  <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <Input
+                    placeholder="ابحث عن منتج..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pr-12 py-6 text-lg bg-secondary/50 border-0 rounded-xl"
+                    autoFocus
+                  />
+                </div>
+                <div className="flex gap-2 mt-3">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    className="flex-1"
+                    onClick={() => setIsSearchOpen(false)}
+                  >
+                    إلغاء
+                  </Button>
+                  <Button type="submit" className="flex-1">
+                    بحث
+                  </Button>
+                </div>
+              </form>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 }
