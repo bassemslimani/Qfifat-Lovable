@@ -50,9 +50,9 @@ export default function Favorites() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background pt-14">
         <Header />
-        <div className="container py-12 text-center">
+        <div className="container py-12 pt-safe text-center">
           <Heart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
           <h2 className="text-xl font-bold mb-2">قائمة المفضلة</h2>
           <p className="text-muted-foreground mb-6">يجب تسجيل الدخول لرؤية المفضلة</p>
@@ -66,10 +66,10 @@ export default function Favorites() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pt-14 pb-20">
       <Header />
       
-      <div className="container py-4">
+      <div className="container py-4 pt-safe">
         <button 
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4"

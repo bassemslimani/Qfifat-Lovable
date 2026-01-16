@@ -102,11 +102,11 @@ export default function ProductDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-32">
+    <div className="min-h-screen bg-background pt-14 pb-32">
       <Header />
       
       {/* Back Button */}
-      <div className="container py-4">
+      <div className="container py-4 pt-safe">
         <button 
           onClick={() => navigate(-1)}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground"

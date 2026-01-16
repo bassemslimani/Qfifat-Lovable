@@ -11,9 +11,9 @@ const Index = () => {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pt-14 pb-20">
       <Header />
-      <main>
+      <main className="pt-safe">
         <HeroSection />
         <DynamicCategorySection />
         <DynamicProductsSection title="منتجات مميزة" featured={true} />

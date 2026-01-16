@@ -23,9 +23,9 @@ export default function Cart() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-background pb-20">
+      <div className="min-h-screen bg-background pt-14 pb-20">
         <Header />
-        <div className="container py-12 text-center">
+        <div className="container py-12 pt-safe text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -47,9 +47,9 @@ export default function Cart() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-32">
+    <div className="min-h-screen bg-background pt-14 pb-32">
       <Header />
-      <main className="container py-6">
+      <main className="container py-6 pt-safe">
         <h1 className="text-xl font-bold text-foreground mb-6">
           سلة التسوق ({items.length} منتج)
         </h1>
