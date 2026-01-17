@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Eye, EyeOff, Lock, Loader2, CheckCircle2 } from "lucide-react";
+import { Eye, EyeOff, Lock, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,22 +16,24 @@ export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [hasValidToken, setHasValidToken] = useState(false);
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
-    // Check if we have the access token in the URL
+    // Check if we have the access token in the URL (from Supabase email)
     const accessToken = searchParams.get("access_token");
-    if (!accessToken) {
-      toast({
-        title: "رابط غير صالح",
-        description: "يرجى استخدام رابط إعادة تعيين كلمة المرور المرسل إلى بريدك الإلكتروني",
-        variant: "destructive",
+
+    if (accessToken) {
+      setHasValidToken(true);
+      // Set the session with the access token
+      supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: searchParams.get("refresh_token") || "",
       });
-      navigate("/auth");
     }
-  }, [searchParams, navigate]);
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,6 +87,35 @@ export default function ResetPassword() {
       setLoading(false);
     }
   };
+
+  // Show error if no valid token
+  if (!hasValidToken) {
+    return (
+      <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md"
+        >
+          <div className="text-center mb-8">
+            <img src={logo} alt="Qfifat" className="h-20 w-20 mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-primary-foreground">قفيفات</h1>
+          </div>
+
+          <div className="bg-card rounded-2xl shadow-elevated p-6 text-center">
+            <AlertCircle className="h-16 w-16 text-destructive mx-auto mb-4" />
+            <h2 className="text-xl font-bold mb-2 text-destructive">رابط غير صالح</h2>
+            <p className="text-muted-foreground mb-6">
+              يرجى استخدام رابط إعادة تعيين كلمة المرور المرسل إلى بريدك الإلكتروني.
+            </p>
+            <Button onClick={() => navigate("/auth")} variant="hero">
+              العودة لتسجيل الدخول
+            </Button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">

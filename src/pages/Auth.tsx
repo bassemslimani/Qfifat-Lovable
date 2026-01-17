@@ -79,6 +79,21 @@ export default function Auth() {
             title: "تم التسجيل بنجاح!",
             description: "مرحباً بك في قفيفات",
           });
+
+          // Send welcome email using our backend
+          try {
+            await fetch(`/api/email.php?endpoint=/api/send-signup-confirmation`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email,
+                name: fullName || "",
+              }),
+            });
+          } catch {
+            // Don't show error for welcome email failure
+            console.log("Welcome email failed to send");
+          }
         }
       } else if (mode === "login") {
         const { error } = await supabase.auth.signInWithPassword({
@@ -103,7 +118,7 @@ export default function Auth() {
           });
         }
       } else if (mode === "forgot") {
-        // Handle forgot password
+        // Handle forgot password - use self-hosted Supabase with Mailjet SMTP
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/auth/reset-password`,
         });
@@ -111,7 +126,7 @@ export default function Auth() {
         if (error) {
           toast({
             title: "خطأ",
-            description: error.message,
+            description: error.message || "فشل إرسال البريد الإلكتروني",
             variant: "destructive",
           });
         } else {
