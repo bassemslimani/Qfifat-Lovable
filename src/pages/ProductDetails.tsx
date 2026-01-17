@@ -48,10 +48,12 @@ export default function ProductDetails() {
       .from("products")
       .select("*, categories(name)")
       .eq("id", id)
-      .single();
+      .limit(1);
 
-    if (!error && data) {
-      setProduct(data as Product);
+    if (!error && data && data.length > 0) {
+      setProduct(data[0] as Product);
+    } else {
+      console.error("Error fetching product:", error);
     }
     setLoading(false);
   };
@@ -76,11 +78,13 @@ export default function ProductDetails() {
   };
 
   const handleShare = async () => {
-    if (!product) return;
-    
+    if (!product || !product.price) return;
+
+    const price = typeof product.price === 'number' ? product.price : Number(product.price);
+
     const shareData = {
       title: product.name,
-      text: `${product.name} - ${product.price.toLocaleString()} دج`,
+      text: `${product.name} - ${price.toLocaleString()} دج`,
       url: window.location.href,
     };
 
@@ -101,8 +105,8 @@ export default function ProductDetails() {
     }
   };
 
-  const discount = product?.original_price
-    ? Math.round(((product.original_price - product.price) / product.original_price) * 100)
+  const discount = product?.original_price && product?.price
+    ? Math.round(((Number(product.original_price) - Number(product.price)) / Number(product.original_price)) * 100)
     : null;
 
   const allImages = product ? [product.image_url, ...(product.images || [])] : [];
@@ -192,11 +196,11 @@ export default function ProductDetails() {
           {/* Price */}
           <div className="flex items-center gap-3">
             <span className="text-3xl font-bold text-primary">
-              {product.price.toLocaleString()} دج
+              {Number(product.price || 0).toLocaleString()} دج
             </span>
             {product.original_price && (
               <span className="text-lg text-muted-foreground line-through">
-                {product.original_price.toLocaleString()} دج
+                {Number(product.original_price).toLocaleString()} دج
               </span>
             )}
           </div>

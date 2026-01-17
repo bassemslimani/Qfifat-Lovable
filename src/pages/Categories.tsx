@@ -26,30 +26,35 @@ export default function Categories() {
 
   const fetchCategories = async () => {
     try {
-      // Fetch categories with product count
-      const { data: categoriesData, error: categoriesError } = await supabase
-        .from("categories")
-        .select("*")
-        .eq("is_active", true)
-        .order("sort_order", { ascending: true });
+      // Fetch both categories and products in parallel
+      const [categoriesResult, productsResult] = await Promise.all([
+        supabase
+          .from("categories")
+          .select("*")
+          .eq("is_active", true)
+          .order("sort_order", { ascending: true }),
+        supabase
+          .from("products")
+          .select("category_id")
+          .eq("is_active", true)
+      ]);
 
-      if (categoriesError) throw categoriesError;
+      if (categoriesResult.error) throw categoriesResult.error;
 
-      // Get product count for each category
-      const categoriesWithCount = await Promise.all(
-        (categoriesData || []).map(async (category) => {
-          const { count } = await supabase
-            .from("products")
-            .select("*", { count: "exact", head: true })
-            .eq("category_id", category.id)
-            .eq("is_active", true);
+      // Count products by category
+      const productCounts: Record<string, number> = {};
+      if (productsResult.data) {
+        for (const product of productsResult.data) {
+          const catId = product.category_id;
+          productCounts[catId] = (productCounts[catId] || 0) + 1;
+        }
+      }
 
-          return {
-            ...category,
-            product_count: count || 0,
-          };
-        })
-      );
+      // Add counts to categories
+      const categoriesWithCount = (categoriesResult.data || []).map(cat => ({
+        ...cat,
+        product_count: productCounts[cat.id] || 0,
+      }));
 
       setCategories(categoriesWithCount);
     } catch (error) {
