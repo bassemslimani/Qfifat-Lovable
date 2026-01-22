@@ -17,21 +17,31 @@ export default function ResetPassword() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [success, setSuccess] = useState(false);
   const [hasValidToken, setHasValidToken] = useState(false);
+  const [tokenType, setTokenType] = useState<"supabase" | "custom" | null>(null);
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [customToken, setCustomToken] = useState("");
 
   useEffect(() => {
-    // Check if we have the access token in the URL (from Supabase email)
+    // Check if we have Supabase's access token (from Supabase email flow)
     const accessToken = searchParams.get("access_token");
+
+    // Check if we have our custom token (from our beautiful email flow)
+    const customResetToken = searchParams.get("token");
 
     if (accessToken) {
       setHasValidToken(true);
+      setTokenType("supabase");
       // Set the session with the access token
       supabase.auth.setSession({
         access_token: accessToken,
         refresh_token: searchParams.get("refresh_token") || "",
       });
+    } else if (customResetToken) {
+      setHasValidToken(true);
+      setTokenType("custom");
+      setCustomToken(customResetToken);
     }
   }, [searchParams]);
 
@@ -59,12 +69,29 @@ export default function ResetPassword() {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: password,
-      });
+      if (tokenType === "supabase") {
+        // Use Supabase's built-in update (user is already authenticated)
+        const { error } = await supabase.auth.updateUser({
+          password: password,
+        });
 
-      if (error) {
-        throw error;
+        if (error) throw error;
+      } else if (tokenType === "custom") {
+        // Use our backend to verify token and update password
+        const response = await fetch(`/api/email.php?endpoint=/api/update-password`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token: customToken,
+            password: password,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || "فشل تحديث كلمة المرور");
+        }
       }
 
       setSuccess(true);

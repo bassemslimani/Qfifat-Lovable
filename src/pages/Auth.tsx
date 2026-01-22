@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight, Loader2, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight, Loader2, ArrowLeft, CheckCircle2, MailCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import logo from "@/assets/logo-white.png";
 
-type AuthMode = "login" | "register" | "forgot";
+type AuthMode = "login" | "register" | "forgot" | "verify-email";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -17,6 +17,8 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
+  const [registeredName, setRegisteredName] = useState("");
 
   // Form fields
   const [email, setEmail] = useState("");
@@ -52,11 +54,11 @@ export default function Auth() {
 
     try {
       if (mode === "register") {
-        const { error } = await supabase.auth.signUp({
+        const { error, data } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: `${window.location.origin}/auth/verify-email`,
             data: {
               full_name: fullName,
               phone: phone,
@@ -75,10 +77,9 @@ export default function Auth() {
             throw error;
           }
         } else {
-          toast({
-            title: "تم التسجيل بنجاح!",
-            description: "مرحباً بك في قفيفات",
-          });
+          // Store registration info for verification page
+          setRegisteredEmail(email);
+          setRegisteredName(fullName);
 
           // Send welcome email using our backend
           try {
@@ -94,6 +95,13 @@ export default function Auth() {
             // Don't show error for welcome email failure
             console.log("Welcome email failed to send");
           }
+
+          // Show email verification screen
+          setMode("verify-email");
+          toast({
+            title: "تم التسجيل بنجاح!",
+            description: "يرجى تأكيد بريدك الإلكتروني",
+          });
         }
       } else if (mode === "login") {
         const { error } = await supabase.auth.signInWithPassword({
@@ -118,15 +126,19 @@ export default function Auth() {
           });
         }
       } else if (mode === "forgot") {
-        // Handle forgot password - use self-hosted Supabase with Mailjet SMTP
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/auth/reset-password`,
+        // Handle forgot password - use our custom API with beautiful email template
+        const response = await fetch(`/api/email.php?endpoint=/api/request-password-reset`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
         });
 
-        if (error) {
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
           toast({
             title: "خطأ",
-            description: error.message || "فشل إرسال البريد الإلكتروني",
+            description: data.error || "فشل إرسال البريد الإلكتروني",
             variant: "destructive",
           });
         } else {
@@ -151,8 +163,43 @@ export default function Auth() {
   const handleBackToLogin = () => {
     setMode("login");
     setResetEmailSent(false);
+    setRegisteredEmail("");
+    setRegisteredName("");
     setEmail("");
     setPassword("");
+  };
+
+  const handleResendVerification = async () => {
+    if (!registeredEmail) return;
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email: registeredEmail,
+      });
+
+      if (error) {
+        toast({
+          title: "خطأ",
+          description: error.message || "فشل إعادة إرسال البريد",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "تم الإرسال",
+          description: "تم إعادة إرسال بريد التأكيد",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "خطأ",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -171,8 +218,63 @@ export default function Auth() {
 
         {/* Auth Card */}
         <div className="bg-card rounded-2xl shadow-elevated p-6">
-          {/* Header - Show tabs for login/register, back button for forgot */}
-          {mode !== "forgot" ? (
+          {/* Email Verification Screen */}
+          {mode === "verify-email" ? (
+            <div className="text-center py-4">
+              <button
+                onClick={handleBackToLogin}
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors mx-auto"
+              >
+                <ArrowRight className="h-4 w-4" />
+                <span className="text-sm font-semibold">العودة لتسجيل الدخول</span>
+              </button>
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="py-6"
+              >
+                <MailCheck className="h-20 w-20 text-primary mx-auto mb-4" />
+                <h2 className="text-2xl font-bold mb-2">تحقق من بريدك الإلكتروني</h2>
+                <p className="text-muted-foreground mb-6">
+                  أرسلنا رابط تأكيد إلى <strong>{registeredEmail}</strong>
+                </p>
+
+                <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 mb-6 text-right">
+                  <h3 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">الخطوات التالية:</h3>
+                  <ol className="text-sm text-blue-700 dark:text-blue-300 space-y-2 list-decimal list-inside">
+                    <li>افتح بريدك الإلكتروني</li>
+                    <li>ابحث عن رسالة من قفيفات</li>
+                    <li>انقر على رابط تأكيد البريد الإلكتروني</li>
+                    <li>استمتع بالتسوق!</li>
+                  </ol>
+                </div>
+
+                <Button
+                  variant="outline"
+                  onClick={handleResendVerification}
+                  disabled={loading}
+                  className="w-full mb-3"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 ml-2 animate-spin" />
+                      جاري الإرسال...
+                    </>
+                  ) : (
+                    "إعادة إرسال بريد التأكيد"
+                  )}
+                </Button>
+
+                <p className="text-xs text-muted-foreground">
+                  لم تستلم البريد؟ تحقق من مجلد الرسائل غير المرغوب فيها
+                </p>
+              </motion.div>
+            </div>
+          ) : (
+            <>
+              {/* Header - Show tabs for login/register, back button for forgot */}
+              {mode !== "forgot" ? (
             <div className="flex bg-secondary rounded-xl p-1 mb-6">
               <button
                 onClick={() => setMode("login")}
@@ -357,6 +459,8 @@ export default function Auth() {
                 لم تستلم البريد؟ إعادة الإرسال
               </button>
             </div>
+          )}
+            </>
           )}
         </div>
 
