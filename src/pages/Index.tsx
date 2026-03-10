@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
+import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/home/HeroSection";
 import { DynamicCategorySection } from "@/components/home/DynamicCategorySection";
 import { DynamicProductsSection } from "@/components/product/DynamicProductCard";
@@ -43,6 +44,7 @@ const Index = () => {
         <PromoSection />
         <BannerSection />
         <DynamicProductsSection title="وصل حديثاً" limit={8} />
+        <Footer />
       </main>
       <BottomNav />
     </div>

@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, X, Smartphone, Wifi, WifiOff, Bell, RefreshCw } from "lucide-react";
+import { Download, X, Smartphone, Wifi, WifiOff, Bell, RefreshCw, Zap, Globe, ShieldCheck, Share, PlusSquare, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePWA } from "@/hooks/usePWA";
+import logo from "@/assets/logo.png";
 
 export function InstallPrompt() {
-  const { isInstallable, isInstalled, isOnline, isUpdating, installApp, updateApp, requestNotificationPermission } = usePWA();
+  const { isInstallable, isInstalled, isOnline, isUpdating, isIOSDevice, installApp, updateApp, requestNotificationPermission } = usePWA();
   const [showPrompt, setShowPrompt] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
@@ -76,41 +77,116 @@ export function InstallPrompt() {
         )}
       </AnimatePresence>
 
-      {/* Install Prompt */}
+      {/* Install Prompt - Professional Design */}
       <AnimatePresence>
         {showPrompt && !isInstalled && (
           <motion.div
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-20 left-4 right-4 z-[100] bg-card rounded-2xl shadow-elevated p-4 border border-border"
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="fixed bottom-20 left-4 right-4 z-[100] bg-card rounded-2xl shadow-elevated border border-border overflow-hidden"
           >
-            <button
-              onClick={handleDismiss}
-              className="absolute top-2 left-2 p-1 text-muted-foreground hover:text-foreground"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            {/* Header with gradient */}
+            <div className="bg-gradient-hero p-4 relative">
+              <button
+                onClick={handleDismiss}
+                className="absolute top-3 left-3 p-1.5 rounded-full bg-white/20 text-white hover:bg-white/30 transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
 
-            <div className="flex items-start gap-4">
-              <div className="w-14 h-14 rounded-xl bg-gradient-hero flex items-center justify-center flex-shrink-0">
-                <Smartphone className="h-7 w-7 text-primary-foreground" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-bold text-foreground mb-1">ثبّت تطبيق قفيفات</h3>
-                <p className="text-sm text-muted-foreground mb-3">
-                  احصل على تجربة أفضل مع التطبيق: إشعارات فورية، تصفح بدون إنترنت، وسرعة أكبر
-                </p>
-                <div className="flex gap-2">
-                  <Button onClick={handleInstall} size="sm" className="flex-1">
-                    <Download className="h-4 w-4 ml-1" />
-                    تثبيت
-                  </Button>
-                  <Button onClick={handleDismiss} size="sm" variant="outline">
-                    لاحقاً
-                  </Button>
+              <div className="flex items-center gap-3">
+                <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0 border border-white/30">
+                  <img src={logo} alt="Qfifat DZ" className="w-10 h-10 object-contain" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-white text-lg">Qfifat DZ</h3>
+                  <p className="text-white/80 text-sm">التطبيق الرسمي</p>
                 </div>
               </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-4">
+              <p className="text-foreground font-medium mb-3">
+                ثبّت التطبيق للحصول على تجربة مميزة
+              </p>
+
+              {/* iOS Instructions */}
+              {isIOSDevice ? (
+                <>
+                  <div className="bg-secondary/50 rounded-xl p-3 mb-4">
+                    <p className="text-sm font-medium text-foreground mb-3">خطوات التثبيت على iPhone:</p>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <Share className="h-4 w-4 text-primary" />
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          1. اضغط على زر المشاركة <span className="inline-block px-1.5 py-0.5 bg-secondary rounded text-xs">⬆️</span> في الأسفل
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <PlusSquare className="h-4 w-4 text-primary" />
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          2. اختر "إضافة إلى الشاشة الرئيسية"
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <Smartphone className="h-4 w-4 text-primary" />
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          3. اضغط "إضافة" في الأعلى
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Single dismiss button for iOS */}
+                  <Button onClick={handleDismiss} variant="outline" className="w-full h-11">
+                    فهمت، سأثبته لاحقاً
+                  </Button>
+                </>
+              ) : (
+                <>
+                  {/* Features for non-iOS */}
+                  <div className="grid grid-cols-3 gap-2 mb-4">
+                    <div className="flex flex-col items-center text-center p-2 rounded-xl bg-secondary/50">
+                      <Zap className="h-5 w-5 text-primary mb-1" />
+                      <span className="text-xs text-muted-foreground">سرعة فائقة</span>
+                    </div>
+                    <div className="flex flex-col items-center text-center p-2 rounded-xl bg-secondary/50">
+                      <Globe className="h-5 w-5 text-primary mb-1" />
+                      <span className="text-xs text-muted-foreground">بدون انترنت</span>
+                    </div>
+                    <div className="flex flex-col items-center text-center p-2 rounded-xl bg-secondary/50">
+                      <Bell className="h-5 w-5 text-primary mb-1" />
+                      <span className="text-xs text-muted-foreground">إشعارات فورية</span>
+                    </div>
+                  </div>
+
+                  {/* Buttons for non-iOS */}
+                  <div className="flex gap-2">
+                    <Button onClick={handleInstall} className="flex-1 h-11">
+                      <Download className="h-4 w-4 ml-2" />
+                      تثبيت التطبيق
+                    </Button>
+                    <Button onClick={handleDismiss} variant="outline" className="h-11 px-4">
+                      لاحقاً
+                    </Button>
+                  </div>
+                </>
+              )}
+
+              {/* Footer note */}
+              <p className="text-[10px] text-muted-foreground text-center mt-3 flex items-center justify-center gap-1">
+                <ShieldCheck className="h-3 w-3" />
+                آمن وموثوق - لا يحتاج مساحة كبيرة
+              </p>
             </div>
           </motion.div>
         )}

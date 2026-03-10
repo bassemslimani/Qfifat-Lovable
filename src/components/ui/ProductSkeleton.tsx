@@ -72,7 +72,7 @@ export function PageSkeleton() {
           </div>
         </div>
       </div>
-      
+
       {/* Content skeleton */}
       <div className="container py-6 space-y-6">
         <HeroSkeleton />
@@ -84,6 +84,74 @@ export function PageSkeleton() {
           <Skeleton className="h-6 w-40" />
           <ProductGridSkeleton />
         </div>
+      </div>
+    </div>
+  );
+}
+
+// Content-only skeleton (Header and Footer are NOT included - they render normally)
+export function ContentSkeleton({ variant = "home" }: { variant?: "home" | "products" | "categories" | "details" }) {
+  if (variant === "products") {
+    return (
+      <div className="container py-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-8 w-40" />
+          <Skeleton className="h-10 w-32 rounded-xl" />
+        </div>
+        <ProductGridSkeleton count={8} />
+      </div>
+    );
+  }
+
+  if (variant === "categories") {
+    return (
+      <div className="container py-6 space-y-6">
+        <Skeleton className="h-8 w-32" />
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="bg-card rounded-2xl p-4 space-y-3">
+              <Skeleton className="aspect-square w-full rounded-xl" />
+              <Skeleton className="h-5 w-3/4 mx-auto" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (variant === "details") {
+    return (
+      <div className="container py-6 space-y-6">
+        <Skeleton className="aspect-square w-full max-w-md mx-auto rounded-2xl" />
+        <div className="space-y-3">
+          <Skeleton className="h-8 w-3/4" />
+          <Skeleton className="h-6 w-1/4" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-4/5" />
+        </div>
+        <div className="flex gap-3">
+          <Skeleton className="h-12 flex-1 rounded-xl" />
+          <Skeleton className="h-12 w-12 rounded-xl" />
+        </div>
+      </div>
+    );
+  }
+
+  // Default: home variant
+  return (
+    <div className="space-y-6">
+      <HeroSkeleton />
+      <div className="container space-y-4">
+        <Skeleton className="h-6 w-32" />
+        <CategoryListSkeleton />
+      </div>
+      <div className="container space-y-4">
+        <Skeleton className="h-6 w-40" />
+        <ProductGridSkeleton count={4} />
+      </div>
+      <div className="container space-y-4">
+        <Skeleton className="h-6 w-36" />
+        <ProductGridSkeleton count={4} />
       </div>
     </div>
   );

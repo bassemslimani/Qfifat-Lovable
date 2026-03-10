@@ -32,7 +32,7 @@ interface InvoiceData {
       id: string;
       product_name: string;
       quantity: number;
-      unit_price: number;
+      price: number;
       total_price: number;
     }[];
   };
@@ -64,7 +64,7 @@ export default function Invoice() {
             id,
             product_name,
             quantity,
-            unit_price,
+            price,
             total_price
           )
         )
@@ -222,7 +222,7 @@ export default function Invoice() {
                     <tr key={item.id}>
                       <td className="px-4 py-3">{item.product_name}</td>
                       <td className="px-4 py-3 text-center">{item.quantity}</td>
-                      <td className="px-4 py-3 text-center">{item.unit_price.toLocaleString()} دج</td>
+                      <td className="px-4 py-3 text-center">{item.price.toLocaleString()} دج</td>
                       <td className="px-4 py-3 text-left font-medium">{item.total_price.toLocaleString()} دج</td>
                     </tr>
                   ))}

@@ -20,7 +20,7 @@ interface OrderTrackingMapProps {
   trackingNumber?: string;
 }
 
-const MAPBOX_TOKEN = "pk.eyJ1IjoibG92YWJsZS1tYXBzIiwiYSI6ImNtYW5yZ3FjdTBkcnAya3NiNTZ1cWdwNmQifQ.eSJxw0_nLa3nKjLf3A8V8A";
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || "";
 
 const statusSteps = [
   { status: "pending", label: "قيد الانتظار", icon: Clock },
@@ -39,28 +39,13 @@ export default function OrderTrackingMap({ orderId, trackingNumber }: OrderTrack
 
   useEffect(() => {
     fetchTrackingData();
-    
-    // Subscribe to realtime updates
-    const channel = supabase
-      .channel(`tracking-${orderId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "shipping_tracking",
-          filter: `order_id=eq.${orderId}`,
-        },
-        (payload) => {
-          console.log("Tracking update:", payload);
-          fetchTrackingData();
-        }
-      )
-      .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    // Poll for updates every 30 seconds (realtime disabled for self-hosted setup)
+    const interval = setInterval(() => {
+      fetchTrackingData();
+    }, 30000);
+
+    return () => clearInterval(interval);
   }, [orderId]);
 
   const fetchTrackingData = async () => {

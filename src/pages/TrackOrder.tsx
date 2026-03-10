@@ -40,7 +40,7 @@ export default function TrackOrder() {
             id,
             product_name,
             quantity,
-            unit_price,
+            price,
             total_price,
             product_image
           )
@@ -223,7 +223,7 @@ export default function TrackOrder() {
                       <div className="flex-1">
                         <p className="font-medium line-clamp-1">{item.product_name}</p>
                         <p className="text-sm text-muted-foreground">
-                          {item.quantity} × {item.unit_price} دج
+                          {item.quantity} × {item.price} دج
                         </p>
                       </div>
                       <p className="font-bold">{item.total_price} دج</p>

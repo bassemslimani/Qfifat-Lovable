@@ -39,41 +39,17 @@ export function useNotifications() {
     fetchNotifications();
   }, [fetchNotifications]);
 
-  // Real-time subscription
+  // Real-time subscription disabled for self-hosted setup (PHP proxy doesn't support WebSocket)
+  // Instead, we poll for new notifications every 30 seconds
   useEffect(() => {
     if (!user) return;
 
-    const channel = supabase
-      .channel("notifications")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "notifications",
-          filter: `user_id=eq.${user.id}`,
-        },
-        (payload) => {
-          const newNotification = payload.new as Notification;
-          setNotifications((prev) => [newNotification, ...prev]);
-          setUnreadCount((prev) => prev + 1);
+    const interval = setInterval(() => {
+      fetchNotifications();
+    }, 30000);
 
-          // Show browser notification if permission granted
-          if (Notification.permission === "granted") {
-            new Notification(newNotification.title, {
-              body: newNotification.message,
-              icon: "/pwa-192x192.png",
-              badge: "/pwa-192x192.png",
-            });
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user]);
+    return () => clearInterval(interval);
+  }, [user, fetchNotifications]);
 
   const markAsRead = async (notificationId: string) => {
     const { error } = await supabase

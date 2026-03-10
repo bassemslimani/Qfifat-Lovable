@@ -9,20 +9,42 @@ interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
 }
 
+// Detect iOS device
+const isIOS = () => {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+};
+
+// Detect if running in Safari
+const isSafari = () => {
+  return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+};
+
 export function usePWA() {
   const [isInstallable, setIsInstallable] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isIOSDevice, setIsIOSDevice] = useState(false);
 
   useEffect(() => {
-    // Check if already installed
-    if (window.matchMedia("(display-mode: standalone)").matches) {
+    // Check if iOS
+    const iosDevice = isIOS();
+    setIsIOSDevice(iosDevice);
+
+    // Check if already installed (standalone mode)
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as any).standalone === true;
+
+    if (isStandalone) {
       setIsInstalled(true);
+    } else if (iosDevice && isSafari()) {
+      // On iOS Safari, we can show install instructions
+      setIsInstallable(true);
     }
 
-    // Listen for install prompt
+    // Listen for install prompt (Android/Desktop Chrome)
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
@@ -117,6 +139,7 @@ export function usePWA() {
     isInstalled,
     isOnline,
     isUpdating,
+    isIOSDevice,
     installApp,
     updateApp,
     requestNotificationPermission,

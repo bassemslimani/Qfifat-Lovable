@@ -75,14 +75,14 @@ export default function MerchantDashboard() {
   }, [user]);
 
   const checkMerchantStatus = async () => {
-    // Check if user has merchant role
+    // Check if user has merchant role (fetch all roles, user may have multiple)
     const { data: roleData } = await supabase
       .from("user_roles")
       .select("role")
-      .eq("user_id", user?.id)
-      .single();
+      .eq("user_id", user?.id);
 
-    if (roleData?.role === "merchant" || roleData?.role === "admin") {
+    const roles = (roleData || []).map(r => r.role);
+    if (roles.includes("merchant") || roles.includes("admin")) {
       setIsMerchant(true);
       setMerchantStatus("approved");
       fetchStats();
@@ -95,7 +95,7 @@ export default function MerchantDashboard() {
         .eq("user_id", user?.id)
         .order("created_at", { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       setMerchantStatus(requestData?.status || null);
     }
@@ -105,7 +105,8 @@ export default function MerchantDashboard() {
     try {
       const { data: productsData } = await supabase
         .from("products")
-        .select("id, is_active");
+        .select("id, is_active")
+        .eq("merchant_id", user?.id);
 
       const totalProducts = productsData?.length || 0;
       const activeProducts = productsData?.filter((p) => p.is_active).length || 0;
@@ -126,6 +127,7 @@ export default function MerchantDashboard() {
     const { data, error } = await supabase
       .from("products")
       .select("*, categories(name)")
+      .eq("merchant_id", user?.id)
       .order("created_at", { ascending: false });
 
     if (!error && data) {

@@ -62,6 +62,7 @@ export default function AdminDashboard() {
     pendingOrders: 0,
     pendingPayments: 0,
   });
+  const [productsRefreshKey, setProductsRefreshKey] = useState(0);
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
@@ -78,17 +79,17 @@ export default function AdminDashboard() {
   const fetchStats = async () => {
     try {
       const [productsRes, ordersRes, pendingOrdersRes, pendingPaymentsRes] = await Promise.all([
-        supabase.from("products").select("id", { count: "exact" }),
-        supabase.from("orders").select("id", { count: "exact" }),
-        supabase.from("orders").select("id", { count: "exact" }).eq("status", "pending"),
-        supabase.from("payments").select("id", { count: "exact" }).eq("status", "pending"),
+        supabase.from("products").select("id"),
+        supabase.from("orders").select("id"),
+        supabase.from("orders").select("id").eq("status", "pending"),
+        supabase.from("payments").select("id").eq("status", "pending"),
       ]);
 
       setStats({
-        totalProducts: productsRes.count || 0,
-        totalOrders: ordersRes.count || 0,
-        pendingOrders: pendingOrdersRes.count || 0,
-        pendingPayments: pendingPaymentsRes.count || 0,
+        totalProducts: productsRes.data?.length ?? 0,
+        totalOrders: ordersRes.data?.length ?? 0,
+        pendingOrders: pendingOrdersRes.data?.length ?? 0,
+        pendingPayments: pendingPaymentsRes.data?.length ?? 0,
       });
     } catch (error) {
       console.error("Error fetching stats:", error);
@@ -317,12 +318,13 @@ export default function AdminDashboard() {
           )}
 
           {activeTab === "products" && (
-            <AdminProducts 
+            <AdminProducts
               showForm={showProductForm}
               setShowForm={setShowProductForm}
               editingProduct={editingProduct}
               setEditingProduct={setEditingProduct}
               onRefresh={fetchStats}
+              refreshKey={productsRefreshKey}
             />
           )}
 
@@ -372,6 +374,8 @@ export default function AdminDashboard() {
                 setShowProductForm(false);
                 setEditingProduct(null);
                 fetchStats();
+                // Trigger a refresh of products list by updating a key
+                setProductsRefreshKey(prev => prev + 1);
               }}
             />
           )}
@@ -388,15 +392,16 @@ interface AdminProductsProps {
   editingProduct: any;
   setEditingProduct: (product: any) => void;
   onRefresh: () => void;
+  refreshKey?: number;
 }
 
-function AdminProducts({ showForm, setShowForm, editingProduct, setEditingProduct, onRefresh }: AdminProductsProps) {
+function AdminProducts({ showForm, setShowForm, editingProduct, setEditingProduct, onRefresh, refreshKey }: AdminProductsProps) {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [refreshKey]);
 
   const fetchProducts = async () => {
     const { data, error } = await supabase
@@ -436,98 +441,103 @@ function AdminProducts({ showForm, setShowForm, editingProduct, setEditingProduc
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="font-bold">قائمة المنتجات ({products.length})</h3>
-        <Button onClick={() => setShowForm(true)}>
-          <Plus className="h-4 w-4 ml-2" />
-          إضافة منتج جديد
+      {/* Header */}
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="font-bold text-lg">المنتجات ({products.length})</h3>
+        <Button onClick={() => setShowForm(true)} size="sm">
+          <Plus className="h-4 w-4 ml-1" />
+          <span className="hidden sm:inline">إضافة منتج</span>
+          <span className="sm:hidden">إضافة</span>
         </Button>
       </div>
 
       {products.length === 0 ? (
-        <div className="bg-card rounded-2xl p-8 text-center">
+        <div className="bg-card rounded-2xl p-8 text-center shadow-card">
           <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <p className="text-muted-foreground">لا توجد منتجات بعد</p>
-          <Button className="mt-4" onClick={() => setShowForm(true)}>
+          <p className="text-muted-foreground mb-4">لا توجد منتجات بعد</p>
+          <Button onClick={() => setShowForm(true)}>
             <Plus className="h-4 w-4 ml-2" />
             أضف أول منتج
           </Button>
         </div>
       ) : (
-        <div className="bg-card rounded-2xl overflow-hidden shadow-card">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-secondary">
-                <tr>
-                  <th className="text-right px-4 py-3 text-sm font-medium">المنتج</th>
-                  <th className="text-right px-4 py-3 text-sm font-medium">السعر</th>
-                  <th className="text-right px-4 py-3 text-sm font-medium">المخزون</th>
-                  <th className="text-right px-4 py-3 text-sm font-medium">الحالة</th>
-                  <th className="text-right px-4 py-3 text-sm font-medium">إجراءات</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {products.map((product) => (
-                  <tr key={product.id}>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={product.image_url || "/placeholder.svg"}
-                          alt={product.name}
-                          className="h-10 w-10 rounded-lg object-cover"
-                        />
-                        <div>
-                          <span className="font-medium block">{product.name}</span>
-                          <span className="text-xs text-muted-foreground">{product.categories?.name}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="font-bold text-primary">{product.price} دج</span>
+        <div className="grid gap-3">
+          {products.map((product) => (
+            <motion.div
+              key={product.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-card rounded-2xl p-4 shadow-card"
+            >
+              <div className="flex gap-3">
+                {/* Product Image */}
+                <img
+                  src={product.image_url || "/placeholder.svg"}
+                  alt={product.name}
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover flex-shrink-0"
+                />
+
+                {/* Product Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-foreground truncate">{product.name}</h4>
+                      <p className="text-xs text-muted-foreground">{product.categories?.name || "بدون فئة"}</p>
+                    </div>
+                    <button
+                      onClick={() => handleToggle(product)}
+                      className={`px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ${
+                        product.is_active
+                          ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {product.is_active ? "نشط" : "معطل"}
+                    </button>
+                  </div>
+
+                  {/* Price & Stock */}
+                  <div className="flex items-center gap-3 mt-2">
+                    <div>
+                      <span className="font-bold text-primary">{product.price?.toLocaleString()} دج</span>
                       {product.original_price && (
-                        <span className="text-xs text-muted-foreground line-through block">
-                          {product.original_price} دج
+                        <span className="text-xs text-muted-foreground line-through mr-2">
+                          {product.original_price?.toLocaleString()}
                         </span>
                       )}
-                    </td>
-                    <td className="px-4 py-3">{product.stock_quantity}</td>
-                    <td className="px-4 py-3">
-                      <button
-                        onClick={() => handleToggle(product)}
-                        className={`px-2 py-1 rounded-full text-xs cursor-pointer ${
-                          product.is_active ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        {product.is_active ? "نشط" : "معطل"}
-                      </button>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-1">
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => {
-                            setEditingProduct(product);
-                            setShowForm(true);
-                          }}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
-                          onClick={() => handleDelete(product.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                    <span className="text-xs bg-secondary px-2 py-0.5 rounded-full">
+                      المخزون: {product.stock_quantity}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-2 mt-3 pt-3 border-t border-border">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex-1"
+                  onClick={() => {
+                    setEditingProduct(product);
+                    setShowForm(true);
+                  }}
+                >
+                  <Edit className="h-4 w-4 ml-1" />
+                  تعديل
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-destructive border-destructive/30 hover:bg-destructive hover:text-destructive-foreground"
+                  onClick={() => handleDelete(product.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </motion.div>
+          ))}
         </div>
       )}
     </div>
@@ -821,7 +831,7 @@ function AdminSettings() {
       .from("barid_settings")
       .select("*")
       .eq("is_active", true)
-      .single();
+      .maybeSingle();
 
     if (!error && data) {
       setBaridSettings(data);
@@ -831,8 +841,55 @@ function AdminSettings() {
 
   const saveSettings = async () => {
     setSaving(true);
-    // Implementation for saving settings
-    setSaving(false);
+    try {
+      // Check if a row exists
+      const { data: existing } = await supabase
+        .from("barid_settings")
+        .select("id")
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (existing) {
+        const { error } = await supabase
+          .from("barid_settings")
+          .update({
+            account_holder_name: baridSettings.account_holder_name,
+            ccp_number: baridSettings.ccp_number,
+            ccp_key: baridSettings.ccp_key,
+            rip_number: baridSettings.rip_number || null,
+            instructions: baridSettings.instructions || null,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", existing.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("barid_settings")
+          .insert({
+            account_holder_name: baridSettings.account_holder_name,
+            ccp_number: baridSettings.ccp_number,
+            ccp_key: baridSettings.ccp_key,
+            rip_number: baridSettings.rip_number || null,
+            instructions: baridSettings.instructions || null,
+            is_active: true,
+          } as any);
+        if (error) throw error;
+      }
+
+      toast({
+        title: "تم الحفظ",
+        description: "تم حفظ إعدادات بريد الجزائر بنجاح",
+      });
+    } catch (error: any) {
+      console.error("Error saving barid settings:", error);
+      toast({
+        title: "خطأ",
+        description: error.message || "حدث خطأ أثناء حفظ الإعدادات",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading) {

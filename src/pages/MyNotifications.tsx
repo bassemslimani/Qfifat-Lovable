@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 
 interface Notification {
   id: string;
@@ -85,7 +85,7 @@ export default function MyNotifications() {
 
     if (!error) {
       setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
-      toast.success("تم تحديد جميع الإشعارات كمقروءة");
+      toast({ title: "تم تحديد جميع الإشعارات كمقروءة" });
     }
   };
 

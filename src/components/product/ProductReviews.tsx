@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Star, Send, User } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 
@@ -49,10 +49,10 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
       const userIds = [...new Set(data.map((r) => r.user_id))];
       const { data: profiles } = await supabase
         .from("profiles")
-        .select("id, full_name, avatar_url")
-        .in("id", userIds);
+        .select("user_id, full_name, avatar_url")
+        .in("user_id", userIds);
 
-      const profilesMap = new Map(profiles?.map((p) => [p.id, p]) || []);
+      const profilesMap = new Map(profiles?.map((p) => [p.user_id, p]) || []);
 
       return data.map((review) => ({
         ...review,
@@ -93,14 +93,14 @@ export const ProductReviews = ({ productId }: ProductReviewsProps) => {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("تم إرسال تقييمك وسيتم مراجعته قريباً");
+      toast({ title: "تم إرسال تقييمك وسيتم مراجعته قريباً" });
       setRating(0);
       setComment("");
       queryClient.invalidateQueries({ queryKey: ["reviews", productId] });
       queryClient.invalidateQueries({ queryKey: ["userReview", productId] });
     },
     onError: (error: Error) => {
-      toast.error(error.message);
+      toast({ title: error.message, variant: "destructive" });
     },
   });
 

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 
 interface Favorite {
   id: string;
@@ -50,10 +50,10 @@ export const useFavorites = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["favorites"] });
-      toast.success("تمت الإضافة للمفضلة");
+      toast({ title: "تمت الإضافة للمفضلة" });
     },
     onError: () => {
-      toast.error("حدث خطأ");
+      toast({ title: "حدث خطأ", variant: "destructive" });
     },
   });
 
@@ -71,17 +71,17 @@ export const useFavorites = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["favorites"] });
-      toast.success("تمت الإزالة من المفضلة");
+      toast({ title: "تمت الإزالة من المفضلة" });
     },
     onError: () => {
-      toast.error("حدث خطأ");
+      toast({ title: "حدث خطأ", variant: "destructive" });
     },
   });
 
   const toggleFavorite = useCallback(
     (productId: string) => {
       if (!user) {
-        toast.error("يجب تسجيل الدخول أولاً");
+        toast({ title: "يجب تسجيل الدخول أولاً", variant: "destructive" });
         return;
       }
 

@@ -25,7 +25,7 @@ type RequestStatus = "pending" | "approved" | "rejected" | null;
 
 export default function BecomeMerchant() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
   const [checkingRequest, setCheckingRequest] = useState(true);
   const [existingRequest, setExistingRequest] = useState<{
@@ -33,7 +33,7 @@ export default function BecomeMerchant() {
     businessName: string;
   } | null>(null);
   const [submitted, setSubmitted] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     businessName: "",
     businessDescription: "",
@@ -44,8 +44,14 @@ export default function BecomeMerchant() {
   // Check if user already has a merchant request
   useEffect(() => {
     const checkExistingRequest = async () => {
+      // Wait for auth to finish loading
+      if (authLoading) {
+        return;
+      }
+
       if (!user) {
         setCheckingRequest(false);
+        setExistingRequest(null);
         return;
       }
 
@@ -63,16 +69,19 @@ export default function BecomeMerchant() {
             status: data.status as RequestStatus,
             businessName: data.business_name,
           });
+        } else {
+          setExistingRequest(null);
         }
       } catch (error) {
         // No existing request
+        setExistingRequest(null);
       } finally {
         setCheckingRequest(false);
       }
     };
 
     checkExistingRequest();
-  }, [user]);
+  }, [user, authLoading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,7 +128,7 @@ export default function BecomeMerchant() {
   };
 
   // Loading state
-  if (checkingRequest) {
+  if (authLoading || checkingRequest) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -131,11 +140,14 @@ export default function BecomeMerchant() {
     );
   }
 
-  // Show existing request status
-  if (existingRequest) {
+  // Show existing request status (only for pending or approved, not rejected)
+  // Rejected users can submit a new request
+  const shouldShowStatusPage = existingRequest &&
+    (existingRequest.status === "pending" || existingRequest.status === "approved");
+
+  if (shouldShowStatusPage) {
     const isPending = existingRequest.status === "pending";
     const isApproved = existingRequest.status === "approved";
-    const isRejected = existingRequest.status === "rejected";
 
     return (
       <div className="min-h-screen bg-background">
@@ -145,39 +157,44 @@ export default function BecomeMerchant() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${
-              isPending ? "bg-warning/10" : isApproved ? "bg-primary/10" : "bg-destructive/10"
+              isPending ? "bg-warning/10" : "bg-primary/10"
             }`}
           >
             {isPending && <HourglassIcon className="h-10 w-10 text-warning" />}
             {isApproved && <CheckCircle className="h-10 w-10 text-primary" />}
-            {isRejected && <XCircle className="h-10 w-10 text-destructive" />}
           </motion.div>
-          
+
           <h1 className="text-2xl font-bold text-foreground mb-2">
             {isPending && "طلبك قيد المراجعة"}
             {isApproved && "تم قبول طلبك!"}
-            {isRejected && "تم رفض طلبك"}
           </h1>
-          
+
           <p className="text-muted-foreground mb-2">
             <span className="font-semibold">{existingRequest.businessName}</span>
           </p>
-          
+
           <p className="text-muted-foreground mb-6">
             {isPending && "لديك طلب معلق لدى الإدارة، سيتم مراجعته والتواصل معك قريباً"}
             {isApproved && "يمكنك الآن الوصول إلى لوحة تحكم البائع"}
-            {isRejected && "للأسف تم رفض طلبك، يمكنك التواصل معنا لمعرفة المزيد"}
           </p>
-          
+
           {isApproved ? (
             <Button onClick={() => navigate("/merchant")} variant="hero">
               الذهاب للوحة التحكم
               <ArrowLeft className="h-4 w-4" />
             </Button>
           ) : (
-            <Button onClick={() => navigate("/")} variant="outline">
-              العودة للرئيسية
-            </Button>
+            <div className="flex flex-col gap-3">
+              <Button onClick={() => navigate("/")} variant="outline">
+                العودة للرئيسية
+              </Button>
+              <button
+                onClick={() => setExistingRequest(null)}
+                className="text-sm text-muted-foreground hover:text-primary underline"
+              >
+                إلغاء الطلب وتقديم طلب جديد
+              </button>
+            </div>
           )}
         </div>
         <BottomNav />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, CreditCard, Building2, Upload, CheckCircle, Loader2, Ticket, X } from "lucide-react";
@@ -56,10 +56,40 @@ export default function Checkout() {
   });
 
   const [baridInfo, setBaridInfo] = useState({
-    accountHolder: "قفيفات للحرف اليدوية",
-    ccpNumber: "0023456789",
-    ccpKey: "45",
+    accountHolder: "",
+    ccpNumber: "",
+    ccpKey: "",
+    ripNumber: "",
+    instructions: "",
   });
+  const [baridLoading, setBaridLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBaridSettings = async () => {
+      try {
+        const { data } = await supabase
+          .from("barid_settings")
+          .select("*")
+          .eq("is_active", true)
+          .maybeSingle();
+
+        if (data) {
+          setBaridInfo({
+            accountHolder: data.account_holder_name || "",
+            ccpNumber: data.ccp_number || "",
+            ccpKey: data.ccp_key || "",
+            ripNumber: data.rip_number || "",
+            instructions: data.instructions || "",
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching barid settings:", error);
+      } finally {
+        setBaridLoading(false);
+      }
+    };
+    fetchBaridSettings();
+  }, []);
 
   const shippingCost = 500; // Fixed shipping cost
   const finalTotal = total - discount + shippingCost;
@@ -182,11 +212,42 @@ export default function Checkout() {
     setLoading(true);
 
     try {
+      // Validate cart products - filter out any non-UUID IDs (from old static data)
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const productIds = items.map(item => item.id).filter(id => uuidRegex.test(id));
+      
+      if (productIds.length !== items.length) {
+        toast({
+          title: "منتجات غير صالحة في السلة",
+          description: "بعض المنتجات في سلتك قديمة. يرجى إفراغ السلة وإعادة إضافة المنتجات.",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Validate cart products exist in database
+      const { data: validProducts, error: validationError } = await supabase
+        .from("products")
+        .select("id")
+        .in("id", productIds);
+
+      if (validationError || !validProducts || validProducts.length !== productIds.length) {
+        toast({
+          title: "خطأ في المنتجات",
+          description: "بعض المنتجات لم تعد متوفرة. يرجى تحديث السلة وإزالة المنتجات غير المتوفرة.",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+
       // Create order
       const { data: order, error: orderError } = await supabase
         .from("orders")
         .insert([{
           customer_id: user.id,
+          user_id: user.id,
           order_number: `QF-${Date.now()}`,
           subtotal: total,
           shipping_cost: shippingCost,
@@ -203,19 +264,23 @@ export default function Checkout() {
       if (orderError) throw orderError;
 
       // Create order items
+      const itemPrice = (p: any) => {
+        const n = Number(p);
+        return isNaN(n) || n <= 0 ? 0 : n;
+      };
       const orderItems = items.map((item) => ({
         order_id: order.id,
         product_id: item.id,
         product_name: item.name,
         product_image: item.image,
         quantity: item.quantity,
-        unit_price: item.price,
-        total_price: item.price * item.quantity,
+        price: itemPrice(item.price),
+        total_price: itemPrice(item.price) * item.quantity,
       }));
 
       const { error: itemsError } = await supabase
         .from("order_items")
-        .insert(orderItems);
+        .insert(orderItems as any);
 
       if (itemsError) throw itemsError;
 
@@ -254,9 +319,12 @@ export default function Checkout() {
         const fileExt = uploadedFile.name.split(".").pop();
         const filePath = `${user.id}/${payment.id}.${fileExt}`;
 
+        const arrayBuffer = await uploadedFile.arrayBuffer();
         const { error: uploadError } = await supabase.storage
           .from("payment-proofs")
-          .upload(filePath, uploadedFile);
+          .upload(filePath, arrayBuffer, {
+            contentType: uploadedFile.type || "application/octet-stream",
+          });
 
         if (uploadError) throw uploadError;
 
@@ -268,10 +336,11 @@ export default function Checkout() {
           .from("payment_proofs")
           .insert({
             payment_id: payment.id,
+            image_url: publicUrl,
             file_url: publicUrl,
             file_name: uploadedFile.name,
             uploaded_by: user.id,
-          });
+          } as any);
       }
 
       clearCart();
@@ -457,20 +526,43 @@ export default function Checkout() {
             {paymentMethod === "barid" && (
               <div className="bg-card rounded-2xl p-4 shadow-card space-y-4">
                 <h3 className="font-bold text-foreground">معلومات التحويل</h3>
-                <div className="bg-secondary rounded-xl p-4 space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">اسم صاحب الحساب</span>
-                    <span className="font-medium">{baridInfo.accountHolder}</span>
+                {baridLoading ? (
+                  <div className="flex justify-center py-4">
+                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">رقم CCP</span>
-                    <span className="font-mono font-bold" dir="ltr">{baridInfo.ccpNumber}</span>
+                ) : !baridInfo.ccpNumber ? (
+                  <div className="bg-destructive/10 rounded-xl p-4 text-center">
+                    <p className="text-destructive text-sm">لم يتم إعداد معلومات الدفع بعد</p>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">المفتاح</span>
-                    <span className="font-mono font-bold" dir="ltr">{baridInfo.ccpKey}</span>
+                ) : (
+                  <div className="bg-secondary rounded-xl p-4 space-y-2">
+                    {baridInfo.accountHolder && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">اسم صاحب الحساب</span>
+                        <span className="font-medium">{baridInfo.accountHolder}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">رقم CCP</span>
+                      <span className="font-mono font-bold" dir="ltr">{baridInfo.ccpNumber}</span>
+                    </div>
+                    {baridInfo.ccpKey && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">المفتاح</span>
+                        <span className="font-mono font-bold" dir="ltr">{baridInfo.ccpKey}</span>
+                      </div>
+                    )}
+                    {baridInfo.ripNumber && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">رقم RIP</span>
+                        <span className="font-mono font-bold" dir="ltr">{baridInfo.ripNumber}</span>
+                      </div>
+                    )}
+                    {baridInfo.instructions && (
+                      <p className="text-sm text-muted-foreground pt-2 border-t border-border mt-2">{baridInfo.instructions}</p>
+                    )}
                   </div>
-                </div>
+                )}
 
                 <div>
                   <Label>رفع وثيقة إثبات التحويل *</Label>

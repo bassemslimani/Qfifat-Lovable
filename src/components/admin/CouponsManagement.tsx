@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus, Pencil, Trash2, Ticket, Copy } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 
@@ -91,12 +91,12 @@ export const CouponsManagement = () => {
       }
     },
     onSuccess: () => {
-      toast.success(editingCoupon ? "تم تحديث الكوبون" : "تم إنشاء الكوبون");
+      toast({ title: editingCoupon ? "تم تحديث الكوبون" : "تم إنشاء الكوبون" });
       queryClient.invalidateQueries({ queryKey: ["admin-coupons"] });
       resetForm();
     },
     onError: (error: Error) => {
-      toast.error(error.message);
+      toast({ title: error.message, variant: "destructive" });
     },
   });
 
@@ -119,7 +119,7 @@ export const CouponsManagement = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("تم حذف الكوبون");
+      toast({ title: "تم حذف الكوبون" });
       queryClient.invalidateQueries({ queryKey: ["admin-coupons"] });
     },
   });
@@ -154,7 +154,7 @@ export const CouponsManagement = () => {
 
   const copyCode = (code: string) => {
     navigator.clipboard.writeText(code);
-    toast.success("تم نسخ الكود");
+    toast({ title: "تم نسخ الكود" });
   };
 
   const generateCode = () => {

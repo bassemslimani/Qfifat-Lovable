@@ -45,6 +45,7 @@ export default function AccountSettings() {
     new: "",
     confirm: "",
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [profile, setProfile] = useState<ProfileData>({
     full_name: "",
     phone: "",
@@ -71,17 +72,23 @@ export default function AccountSettings() {
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .eq("id", user?.id)
+        .eq("user_id", user?.id)
         .single();
 
-      if (data) {
+      if (error) {
+        console.error("Error fetching profile:", error);
+      }
+
+      // Handle both object and array responses for proxy compatibility
+      const profile = Array.isArray(data) ? data[0] : data;
+      if (profile) {
         setProfile({
-          full_name: data.full_name || "",
-          phone: data.phone || "",
-          wilaya: data.wilaya || "",
-          city: data.city || "",
-          address: data.address || "",
-          avatar_url: data.avatar_url || "",
+          full_name: profile.full_name || "",
+          phone: profile.phone || "",
+          wilaya: profile.wilaya || "",
+          city: profile.city || "",
+          address: profile.address || "",
+          avatar_url: profile.avatar_url || "",
         });
       }
     } catch (error) {
@@ -128,9 +135,13 @@ export default function AccountSettings() {
       }
 
       // Upload new avatar
+      const arrayBuffer = await file.arrayBuffer();
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(fileName, file, { upsert: true });
+        .upload(fileName, arrayBuffer, {
+          contentType: file.type || "application/octet-stream",
+          upsert: true,
+        });
 
       if (uploadError) throw uploadError;
 
@@ -143,7 +154,7 @@ export default function AccountSettings() {
       const { error: updateError } = await supabase
         .from("profiles")
         .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
-        .eq("id", user.id);
+        .eq("user_id", user.id);
 
       if (updateError) throw updateError;
 
@@ -218,23 +229,53 @@ export default function AccountSettings() {
     }
   };
 
+  const validateProfile = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (!profile.full_name.trim()) {
+      newErrors.full_name = "يرجى إدخال الاسم الكامل";
+    } else if (profile.full_name.trim().length < 3) {
+      newErrors.full_name = "الاسم يجب أن يكون 3 أحرف على الأقل";
+    }
+
+    if (profile.phone) {
+      const cleanPhone = profile.phone.replace(/\s/g, "");
+      if (!/^(0[5-7]\d{8}|\+213[5-7]\d{8})$/.test(cleanPhone)) {
+        newErrors.phone = "رقم الهاتف غير صالح (مثال: 0555123456)";
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSave = async () => {
     if (!user) return;
 
+    if (!validateProfile()) {
+      toast({
+        title: "خطأ في البيانات",
+        description: "يرجى تصحيح الأخطاء في النموذج",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSaving(true);
     try {
+      const updateData = {
+        full_name: profile.full_name.trim(),
+        phone: profile.phone.trim(),
+        wilaya: profile.wilaya,
+        city: profile.city.trim(),
+        address: profile.address.trim(),
+        avatar_url: profile.avatar_url,
+      };
+
       const { error } = await supabase
         .from("profiles")
-        .upsert({
-          id: user.id,
-          full_name: profile.full_name,
-          phone: profile.phone,
-          wilaya: profile.wilaya,
-          city: profile.city,
-          address: profile.address,
-          avatar_url: profile.avatar_url,
-          updated_at: new Date().toISOString(),
-        });
+        .update(updateData)
+        .eq("user_id", user.id);
 
       if (error) throw error;
 
@@ -321,17 +362,21 @@ export default function AccountSettings() {
             <h2 className="font-bold text-foreground mb-4">المعلومات الشخصية</h2>
 
             <div className="space-y-2">
-              <Label htmlFor="full_name">الاسم الكامل</Label>
+              <Label htmlFor="full_name">الاسم الكامل <span className="text-destructive">*</span></Label>
               <div className="relative">
                 <User className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
                   id="full_name"
                   value={profile.full_name}
-                  onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
-                  className="pr-10"
+                  onChange={(e) => {
+                    setProfile({ ...profile, full_name: e.target.value });
+                    if (errors.full_name) setErrors({ ...errors, full_name: "" });
+                  }}
+                  className={`pr-10 ${errors.full_name ? "border-destructive" : ""}`}
                   placeholder="أدخل اسمك الكامل"
                 />
               </div>
+              {errors.full_name && <p className="text-destructive text-xs">{errors.full_name}</p>}
             </div>
 
             <div className="space-y-2">
@@ -342,12 +387,16 @@ export default function AccountSettings() {
                   id="phone"
                   type="tel"
                   value={profile.phone}
-                  onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                  className="pr-10"
-                  placeholder="0XXX XXX XXX"
+                  onChange={(e) => {
+                    setProfile({ ...profile, phone: e.target.value });
+                    if (errors.phone) setErrors({ ...errors, phone: "" });
+                  }}
+                  className={`pr-10 ${errors.phone ? "border-destructive" : ""}`}
+                  placeholder="0555 123 456"
                   dir="ltr"
                 />
               </div>
+              {errors.phone && <p className="text-destructive text-xs">{errors.phone}</p>}
             </div>
 
             <div className="space-y-2">

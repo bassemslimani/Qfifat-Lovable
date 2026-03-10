@@ -10,7 +10,7 @@ interface OrderItem {
   product_name: string;
   product_image: string | null;
   quantity: number;
-  unit_price: number;
+  price: number;
   total_price: number;
 }
 
@@ -243,7 +243,7 @@ export function MerchantOrders() {
                     <div className="flex-1">
                       <p className="font-medium text-sm">{item.product_name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {item.quantity} × {item.unit_price.toLocaleString()} دج
+                        {item.quantity} × {item.price.toLocaleString()} دج
                       </p>
                     </div>
                     <span className="font-bold">{item.total_price.toLocaleString()} دج</span>

@@ -31,7 +31,7 @@ import {
 import { BottomNav } from "@/components/layout/BottomNav";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 
 const wilayas = [
   "أدرار", "الشلف", "الأغواط", "أم البواقي", "باتنة", "بجاية", "بسكرة",
@@ -93,7 +93,7 @@ export default function MyAddresses() {
     const { data: profile } = await supabase
       .from("profiles")
       .select("*")
-      .eq("id", user?.id)
+      .eq("user_id", user?.id)
       .single();
 
     if (profile && profile.address) {
@@ -142,7 +142,7 @@ export default function MyAddresses() {
 
   const handleSave = async () => {
     if (!formData.name || !formData.phone || !formData.wilaya || !formData.address) {
-      toast.error("يرجى ملء جميع الحقول المطلوبة");
+      toast({ title: "يرجى ملء جميع الحقول المطلوبة", variant: "destructive" });
       return;
     }
 
@@ -158,17 +158,17 @@ export default function MyAddresses() {
           city: formData.city,
           address: formData.address,
         })
-        .eq("id", user?.id);
+        .eq("user_id", user?.id);
 
       if (error) throw error;
 
-      toast.success(editingAddress ? "تم تحديث العنوان" : "تم إضافة العنوان");
+      toast({ title: editingAddress ? "تم تحديث العنوان" : "تم إضافة العنوان" });
       setShowForm(false);
       resetForm();
       fetchAddresses();
     } catch (error) {
       console.error("Error saving address:", error);
-      toast.error("حدث خطأ أثناء الحفظ");
+      toast({ title: "حدث خطأ أثناء الحفظ", variant: "destructive" });
     }
     setSaving(false);
   };

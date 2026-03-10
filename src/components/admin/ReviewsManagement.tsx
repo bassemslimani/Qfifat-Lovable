@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Star, Check, X, Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 
@@ -38,10 +38,10 @@ export const ReviewsManagement = () => {
       const userIds = [...new Set(data.map((r) => r.user_id))];
       const { data: profiles } = await supabase
         .from("profiles")
-        .select("id, full_name")
-        .in("id", userIds);
+        .select("user_id, full_name")
+        .in("user_id", userIds);
 
-      const profilesMap = new Map(profiles?.map((p) => [p.id, p]) || []);
+      const profilesMap = new Map(profiles?.map((p) => [p.user_id, p]) || []);
 
       return data.map((review) => ({
         ...review,
@@ -60,11 +60,11 @@ export const ReviewsManagement = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("تم تحديث حالة التقييم");
+      toast({ title: "تم تحديث حالة التقييم" });
       queryClient.invalidateQueries({ queryKey: ["admin-reviews"] });
     },
     onError: () => {
-      toast.error("حدث خطأ أثناء التحديث");
+      toast({ title: "حدث خطأ أثناء التحديث", variant: "destructive" });
     },
   });
 
@@ -74,11 +74,11 @@ export const ReviewsManagement = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("تم حذف التقييم");
+      toast({ title: "تم حذف التقييم" });
       queryClient.invalidateQueries({ queryKey: ["admin-reviews"] });
     },
     onError: () => {
-      toast.error("حدث خطأ أثناء الحذف");
+      toast({ title: "حدث خطأ أثناء الحذف", variant: "destructive" });
     },
   });
 

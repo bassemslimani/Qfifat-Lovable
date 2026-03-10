@@ -49,10 +49,12 @@ export default function Account() {
     const { data } = await supabase
       .from("profiles")
       .select("*")
-      .eq("id", user?.id)
+      .eq("user_id", user?.id)
       .single();
 
-    if (data) setProfile(data);
+    // Handle both object and array responses for proxy compatibility
+    const profile = Array.isArray(data) ? data[0] : data;
+    if (profile) setProfile(profile);
   };
 
   const fetchOrders = async () => {

@@ -18,8 +18,8 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "robots.txt", "products/*.jpeg"],
       manifest: {
-        name: "قفيفات - الحرف اليدوية الجزائرية",
-        short_name: "قفيفات",
+        name: "Qfifat DZ - الحرف اليدوية الجزائرية",
+        short_name: "Qfifat DZ",
         description: "منصة بيع القفيفات الحرفية الجزائرية ومستلزمات التجار",
         theme_color: "#1a7a4c",
         background_color: "#FDFBF7",

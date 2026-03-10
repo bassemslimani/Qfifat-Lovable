@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Grid3X3, ChevronLeft, Loader2 } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
+import { Footer } from "@/components/layout/Footer";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Category {
@@ -147,6 +148,8 @@ export default function Categories() {
             ))}
           </div>
         )}
+
+        <Footer />
       </main>
 
       <BottomNav />

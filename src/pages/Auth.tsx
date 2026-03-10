@@ -55,7 +55,7 @@ export default function Auth() {
     try {
       if (mode === "register") {
         const { error, data } = await supabase.auth.signUp({
-          email,
+          email: email.trim().toLowerCase(),
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/auth/verify-email`,
@@ -105,7 +105,7 @@ export default function Auth() {
         }
       } else if (mode === "login") {
         const { error } = await supabase.auth.signInWithPassword({
-          email,
+          email: email.trim().toLowerCase(),
           password,
         });
 
@@ -378,6 +378,7 @@ export default function Auth() {
                 <Mail className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="email"
+                    autoComplete="email"
                   type="email"
                   placeholder="example@email.com"
                   value={email}
@@ -397,6 +398,7 @@ export default function Auth() {
                   <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="password"
+                    autoComplete={mode === "register" ? "new-password" : "current-password"}
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     value={password}

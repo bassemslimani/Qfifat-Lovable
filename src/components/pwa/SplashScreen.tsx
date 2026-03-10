@@ -139,30 +139,34 @@ export function SplashScreen({ onComplete, minDuration = 2500 }: SplashScreenPro
             </motion.div>
           </motion.div>
 
-          {/* Brand name with letter animation */}
+          {/* Brand name with letter animation - LTR for English */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.6, ease: "easeOut" }}
             className="mt-8 overflow-hidden"
+            dir="ltr"
           >
             <motion.h1
               className="text-4xl font-bold text-primary-foreground"
+              dir="ltr"
+              style={{ direction: "ltr", unicodeBidi: "bidi-override" }}
               animate={{
                 textShadow: phase === "reveal"
                   ? "0 0 20px rgba(255,255,255,0.5)"
                   : "0 0 0px rgba(255,255,255,0)"
               }}
             >
-              {"قفيفات".split("").map((char, i) => (
+              {"Qfifat DZ".split("").map((char, i) => (
                 <motion.span
                   key={i}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 + i * 0.08, duration: 0.4 }}
+                  transition={{ delay: 0.6 + i * 0.06, duration: 0.4 }}
                   className="inline-block"
+                  style={{ direction: "ltr" }}
                 >
-                  {char}
+                  {char === " " ? "\u00A0" : char}
                 </motion.span>
               ))}
             </motion.h1>

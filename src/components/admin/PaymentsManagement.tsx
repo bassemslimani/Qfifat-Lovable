@@ -22,7 +22,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 
 interface Payment {
@@ -43,8 +43,9 @@ interface Payment {
   } | null;
   payment_proofs: {
     id: string;
-    file_url: string;
-    file_name: string;
+    image_url: string;
+    file_url: string | null;
+    file_name: string | null;
     created_at: string;
   }[];
 }
@@ -71,7 +72,7 @@ export function PaymentsManagement() {
       .select(`
         *,
         orders(order_number, shipping_name, shipping_phone, shipping_wilaya, total),
-        payment_proofs(id, file_url, file_name, created_at)
+        payment_proofs(id, image_url, file_url, file_name, created_at)
       `)
       .order("created_at", { ascending: false });
 
@@ -104,13 +105,13 @@ export function PaymentsManagement() {
 
       if (orderError) throw orderError;
 
-      toast.success("تم تأكيد الدفع بنجاح");
+      toast({ title: "تم تأكيد الدفع بنجاح" });
       setShowProofModal(false);
       setSelectedPayment(null);
       fetchPayments();
     } catch (error) {
       console.error("Error approving payment:", error);
-      toast.error("حدث خطأ أثناء تأكيد الدفع");
+      toast({ title: "حدث خطأ أثناء تأكيد الدفع", variant: "destructive" });
     }
     setProcessing(false);
   };
@@ -118,7 +119,7 @@ export function PaymentsManagement() {
   const handleReject = async () => {
     if (!selectedPayment) return;
     if (!rejectReason.trim()) {
-      toast.error("يرجى إدخال سبب الرفض");
+      toast({ title: "يرجى إدخال سبب الرفض", variant: "destructive" });
       return;
     }
 
@@ -142,7 +143,7 @@ export function PaymentsManagement() {
         .update({ status: "cancelled" })
         .eq("id", selectedPayment.order_id);
 
-      toast.success("تم رفض الدفع");
+      toast({ title: "تم رفض الدفع" });
       setShowRejectModal(false);
       setShowProofModal(false);
       setSelectedPayment(null);
@@ -150,7 +151,7 @@ export function PaymentsManagement() {
       fetchPayments();
     } catch (error) {
       console.error("Error rejecting payment:", error);
-      toast.error("حدث خطأ أثناء رفض الدفع");
+      toast({ title: "حدث خطأ أثناء رفض الدفع", variant: "destructive" });
     }
     setProcessing(false);
   };
@@ -363,13 +364,16 @@ export function PaymentsManagement() {
               <div className="space-y-3">
                 <h4 className="font-semibold">صور إثبات الدفع:</h4>
                 <div className="grid gap-4">
-                  {selectedPayment.payment_proofs.map((proof) => (
+                  {selectedPayment.payment_proofs.map((proof) => {
+                    const proofUrl = proof.image_url || proof.file_url || "";
+                    const proofName = proof.file_name || "إثبات الدفع";
+                    return (
                     <div key={proof.id} className="border rounded-xl overflow-hidden">
                       <div className="bg-secondary px-3 py-2 flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">{proof.file_name}</span>
+                        <span className="text-sm text-muted-foreground">{proofName}</span>
                         <div className="flex gap-2">
                           <a
-                            href={proof.file_url}
+                            href={proofUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-primary hover:underline flex items-center gap-1 text-sm"
@@ -378,8 +382,8 @@ export function PaymentsManagement() {
                             فتح
                           </a>
                           <a
-                            href={proof.file_url}
-                            download={proof.file_name}
+                            href={proofUrl}
+                            download={proofName}
                             className="text-primary hover:underline flex items-center gap-1 text-sm"
                           >
                             <Download className="h-4 w-4" />
@@ -389,8 +393,8 @@ export function PaymentsManagement() {
                       </div>
                       <div className="p-2 bg-muted/50">
                         <img
-                          src={proof.file_url}
-                          alt={proof.file_name}
+                          src={proofUrl}
+                          alt={proofName}
                           className="w-full max-h-96 object-contain rounded-lg"
                           onError={(e) => {
                             (e.target as HTMLImageElement).src = "/placeholder.svg";
@@ -398,7 +402,8 @@ export function PaymentsManagement() {
                         />
                       </div>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ) : (

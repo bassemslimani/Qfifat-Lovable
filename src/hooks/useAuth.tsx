@@ -109,11 +109,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Sign out API error:', error);
+    }
+    // Always clear state even if API call fails
     setUser(null);
     setSession(null);
     setIsAdmin(false);
     setIsMerchant(false);
+    // Clear all auth-related storage to ensure clean logout in PWA
+    try {
+      const keysToRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.includes('supabase') || key.includes('sb-'))) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      sessionStorage.clear();
+    } catch (e) {
+      console.error('Error clearing storage:', e);
+    }
+    // Force hard navigation to bypass service worker cache
+    window.location.href = '/auth';
   };
 
   return (

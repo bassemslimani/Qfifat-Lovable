@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/Header";
 import { BottomNav } from "@/components/layout/BottomNav";
+import { Footer } from "@/components/layout/Footer";
 import { DynamicProductCard } from "@/components/product/DynamicProductCard";
 import { supabase } from "@/integrations/supabase/client";
 import { Slider } from "@/components/ui/slider";
@@ -57,13 +58,18 @@ export default function Products() {
         .order("sort_order"),
     ]);
 
-    if (!productsRes.error) setProducts(productsRes.data as Product[]);
-    if (!categoriesRes.error) setCategories(categoriesRes.data as Category[]);
+    if (!productsRes.error && productsRes.data) {
+      setProducts(productsRes.data as Product[]);
+    }
+    if (!categoriesRes.error && categoriesRes.data) {
+      setCategories(categoriesRes.data as Category[]);
+    }
     setLoading(false);
   };
 
   // Filter and sort products
   const filteredProducts = useMemo(() => {
+    if (!Array.isArray(products)) return [];
     let result = [...products];
 
     // Search filter
@@ -282,6 +288,8 @@ export default function Products() {
             ))}
           </div>
         )}
+
+        <Footer />
       </main>
 
       <BottomNav />
