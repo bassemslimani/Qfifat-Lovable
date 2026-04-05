@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Search, Filter, X, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -31,11 +32,12 @@ interface Category {
 }
 
 export default function Products() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(searchParams.get("category"));
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000]);
   const [sortBy, setSortBy] = useState<"newest" | "price_asc" | "price_desc" | "rating">("newest");
   const [showFilters, setShowFilters] = useState(false);
@@ -155,7 +157,7 @@ export default function Products() {
         {/* Categories Scroll */}
         <div className="flex gap-2 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
           <button
-            onClick={() => setSelectedCategory(null)}
+            onClick={() => { setSelectedCategory(null); setSearchParams({}); }}
             className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
               !selectedCategory
                 ? "bg-primary text-primary-foreground"
@@ -167,7 +169,7 @@ export default function Products() {
           {categories.map((category) => (
             <button
               key={category.id}
-              onClick={() => setSelectedCategory(category.id)}
+              onClick={() => { setSelectedCategory(category.id); setSearchParams({ category: category.id }); }}
               className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-colors flex items-center gap-1 ${
                 selectedCategory === category.id
                   ? "bg-primary text-primary-foreground"

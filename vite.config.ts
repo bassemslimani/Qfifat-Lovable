@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => ({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "robots.txt", "products/*.jpeg"],
+      includeAssets: ["favicon.ico", "robots.txt"],
       manifest: {
         name: "Qfifat DZ - الحرف اليدوية الجزائرية",
         short_name: "Qfifat DZ",
@@ -75,50 +75,33 @@ export default defineConfig(({ mode }) => ({
       },
       workbox: {
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2,jpeg,jpg}"],
-        // Skip caching for API routes and auth - always fetch fresh
-        navigateFallbackDenylist: [/^\/api\//, /^\/auth\//],
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
+        // Skip caching for API, auth, and admin routes
+        navigateFallbackDenylist: [/^\/api\//, /^\/auth\//, /^\/admin/],
+        // Force new service worker to take control immediately
+        skipWaiting: true,
+        clientsClaim: true,
+        // Clean old caches on update
+        cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
-            // Match API requests to the Supabase proxy
+            // API requests - ALWAYS go to network, no caching
             urlPattern: /\/api\/supabase\.php.*/i,
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "supabase-api-cache",
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 // 24 hours
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              },
-              networkTimeoutSeconds: 10
-            }
+            handler: "NetworkOnly",
           },
           {
-            // Match REST API calls (storage, etc)
             urlPattern: /\/rest\/v1\/.*/i,
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "supabase-rest-cache",
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 // 1 hour
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              },
-              networkTimeoutSeconds: 10
-            }
+            handler: "NetworkOnly",
           },
           {
+            // Images - cache but revalidate
             urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/i,
-            handler: "CacheFirst",
+            handler: "StaleWhileRevalidate",
             options: {
               cacheName: "images-cache",
               expiration: {
-                maxEntries: 200,
-                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
               }
             }
           },

@@ -70,12 +70,12 @@ export function DynamicCategorySection() {
               transition={{ delay: index * 0.1 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate(`/category/${category.id}`)}
-              className="flex flex-col items-center gap-2 min-w-[80px]"
+              className="flex flex-col items-center gap-2 w-[76px] flex-shrink-0"
             >
               <div className="w-16 h-16 rounded-2xl bg-secondary flex items-center justify-center text-2xl shadow-card hover:shadow-elevated transition-shadow hover:bg-primary/10">
                 {category.icon || "📦"}
               </div>
-              <span className="text-xs font-medium text-foreground whitespace-nowrap">
+              <span className="text-[11px] font-medium text-foreground text-center leading-tight line-clamp-2 w-full">
                 {category.name}
               </span>
             </motion.button>

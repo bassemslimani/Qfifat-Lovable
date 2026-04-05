@@ -1,10 +1,26 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Sparkles, Grid3X3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 export function HeroSection() {
   const navigate = useNavigate();
+  const [productCount, setProductCount] = useState(0);
+  const [customerCount, setCustomerCount] = useState(0);
+
+  useEffect(() => {
+    async function fetchStats() {
+      const [productsRes, customersRes] = await Promise.all([
+        supabase.from("products").select("id"),
+        supabase.from("profiles").select("id"),
+      ]);
+      if (productsRes.data) setProductCount(productsRes.data.length);
+      if (customersRes.data) setCustomerCount(customersRes.data.length);
+    }
+    fetchStats();
+  }, []);
 
   return (
     <section className="relative overflow-hidden bg-gradient-hero text-primary-foreground">
@@ -73,15 +89,15 @@ export function HeroSection() {
           className="flex justify-between sm:justify-start sm:gap-8 mt-8 sm:mt-10 pt-5 sm:pt-6 border-t border-primary-foreground/20"
         >
           <div className="text-center sm:text-right">
-            <div className="text-xl sm:text-2xl font-bold">+500</div>
+            <div className="text-xl sm:text-2xl font-bold">+{productCount}</div>
             <div className="text-xs sm:text-sm text-primary-foreground/70">منتج حرفي</div>
           </div>
           <div className="text-center sm:text-right">
-            <div className="text-xl sm:text-2xl font-bold">+2000</div>
+            <div className="text-xl sm:text-2xl font-bold">+{customerCount}</div>
             <div className="text-xs sm:text-sm text-primary-foreground/70">عميل سعيد</div>
           </div>
           <div className="text-center sm:text-right">
-            <div className="text-xl sm:text-2xl font-bold">48</div>
+            <div className="text-xl sm:text-2xl font-bold">69</div>
             <div className="text-xs sm:text-sm text-primary-foreground/70">ولاية</div>
           </div>
         </motion.div>
