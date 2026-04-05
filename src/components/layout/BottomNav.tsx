@@ -29,38 +29,55 @@ export function BottomNav() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-effect border-t border-border/50">
-      <div className="flex items-center justify-around h-14 pb-safe">
-        {navItems.map((item) => (
-          <motion.button
-            key={item.path}
-            onClick={() => navigate(item.path)}
-            className={`flex flex-col items-center justify-center gap-1 flex-1 h-full relative transition-colors ${
-              isActive(item.path) ? "text-primary" : "text-muted-foreground hover:text-primary"
-            }`}
-            whileTap={{ scale: 0.9 }}
-          >
-            <div className="relative">
-              <item.icon className="h-5 w-5" />
-              {item.badge !== undefined && item.badge > 0 && (
-                <motion.span
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="absolute -top-2 -left-2 h-4 w-4 bg-accent text-accent-foreground text-[10px] font-bold rounded-full flex items-center justify-center"
-                >
-                  {item.badge > 9 ? "9+" : item.badge}
-                </motion.span>
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border">
+      <div className="flex items-stretch h-16 pb-safe">
+        {navItems.map((item) => {
+          const active = isActive(item.path);
+          return (
+            <motion.button
+              key={item.path}
+              onClick={() => navigate(item.path)}
+              className="flex flex-col items-center justify-center flex-1 relative"
+              whileTap={{ scale: 0.85 }}
+            >
+              {/* Active background pill */}
+              {active && (
+                <motion.div
+                  layoutId="navPill"
+                  className="absolute inset-x-2 top-1.5 bottom-1.5 bg-primary/10 rounded-2xl"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
               )}
-            </div>
-            <span className="text-[10px] font-medium">{item.label}</span>
-            {isActive(item.path) && (
-              <motion.div
-                layoutId="activeTab"
-                className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary rounded-b-full"
-              />
-            )}
-          </motion.button>
-        ))}
+
+              <div className="relative z-10 flex flex-col items-center gap-0.5">
+                <div className="relative">
+                  <item.icon
+                    className={`h-[22px] w-[22px] transition-colors ${
+                      active ? "text-primary" : "text-muted-foreground"
+                    }`}
+                    strokeWidth={active ? 2.5 : 2}
+                  />
+                  {item.badge !== undefined && item.badge > 0 && (
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute -top-1.5 -left-2.5 min-w-[18px] h-[18px] bg-accent text-accent-foreground text-[10px] font-bold rounded-full flex items-center justify-center px-1"
+                    >
+                      {item.badge > 9 ? "9+" : item.badge}
+                    </motion.span>
+                  )}
+                </div>
+                <span
+                  className={`text-[10px] leading-tight transition-colors ${
+                    active ? "text-primary font-semibold" : "text-muted-foreground font-medium"
+                  }`}
+                >
+                  {item.label}
+                </span>
+              </div>
+            </motion.button>
+          );
+        })}
       </div>
     </nav>
   );

@@ -44,35 +44,39 @@ export function InstallPrompt() {
 
   return (
     <>
-      {/* Offline Banner */}
+      {/* Offline Banner — below safe area + header */}
       <AnimatePresence>
         {!isOnline && (
           <motion.div
-            initial={{ y: -50, opacity: 0 }}
+            initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -50, opacity: 0 }}
-            className="fixed top-0 left-0 right-0 z-[100] bg-yellow-500 text-yellow-900 py-2 px-4 text-center text-sm font-medium flex items-center justify-center gap-2"
+            exit={{ y: -20, opacity: 0 }}
+            className="fixed top-0 left-0 right-0 z-[100] pt-safe"
           >
-            <WifiOff className="h-4 w-4" />
-            أنت غير متصل بالإنترنت - بعض الميزات قد لا تعمل
+            <div className="mt-14 mx-3 bg-yellow-500 text-yellow-900 py-2.5 px-4 rounded-xl text-center text-sm font-medium flex items-center justify-center gap-2 shadow-lg">
+              <WifiOff className="h-4 w-4 flex-shrink-0" />
+              أنت غير متصل بالإنترنت
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Update Available Banner */}
+      {/* Update Available Banner — below safe area + header */}
       <AnimatePresence>
         {isUpdating && (
           <motion.div
-            initial={{ y: -50, opacity: 0 }}
+            initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -50, opacity: 0 }}
-            className="fixed top-0 left-0 right-0 z-[100] bg-primary text-primary-foreground py-2 px-4 text-center text-sm font-medium flex items-center justify-center gap-2"
+            exit={{ y: -20, opacity: 0 }}
+            className="fixed top-0 left-0 right-0 z-[100] pt-safe"
           >
-            <RefreshCw className="h-4 w-4 animate-spin" />
-            تحديث جديد متاح
-            <Button size="sm" variant="secondary" onClick={updateApp} className="mr-2 h-7">
-              تحديث الآن
-            </Button>
+            <div className="mt-14 mx-3 bg-primary text-primary-foreground py-2.5 px-4 rounded-xl text-sm font-medium flex items-center justify-center gap-2 shadow-lg">
+              <RefreshCw className="h-4 w-4 animate-spin flex-shrink-0" />
+              <span>تحديث جديد متاح</span>
+              <Button size="sm" variant="secondary" onClick={updateApp} className="mr-1 h-7 rounded-lg text-xs">
+                تحديث
+              </Button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
